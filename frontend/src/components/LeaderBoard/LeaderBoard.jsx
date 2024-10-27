@@ -44,11 +44,11 @@ const TopThreeCard = ({ user, rank }) => {
   const getIcon = () => {
     switch(rank) {
       case 1:
-        return <Crown className="h-6 w-6 text-yellow-500" />;
+        return <Crown className="h-6 w-6 text-yellow-800" />;
       case 2:
-        return <Medal className="h-6 w-6 text-gray-500" />;
+        return <Medal className="h-6 w-6 text-gray-800" />;
       case 3:
-        return <Medal className="h-6 w-6 text-orange-500" />;
+        return <Medal className="h-6 w-6 text-orange-800" />;
       default:
         return null;
     }
@@ -195,11 +195,11 @@ export default function Leaderboard() {
 
   const topThree = leaderboardData.slice(0, 3);
 
-  return (
-    <div className="container mx-auto py-2 px-4">
+  return ( 
+    <div className="bg-gray-900 p-4 container mx-auto px-4">
       {/* Header */}
       <motion.div 
-        className="text-center mb-16"
+        className="text-center mb-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}

@@ -98,7 +98,7 @@ export default function LandingPage() {
                         </CardHeader>
                         <CardContent>
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 bg-gray-700 rounded-full p-1 mb-6">
+                                <TabsList className="grid w-full h-full grid-cols-2 bg-gray-700 rounded-full p-1 mb-6">
                                     <TabsTrigger
                                         value="login"
                                         className={`py-2 px-4 text-center text-gray-200 font-semibold rounded-full ${

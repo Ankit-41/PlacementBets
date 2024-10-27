@@ -82,7 +82,7 @@ export default function ActiveBets() {
   const [selectedBet, setSelectedBet] = useState(null)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 bg-gray-900">
       {/* Updated Active Bets Header */}
       <motion.div 
         className="text-center mb-4"

@@ -1,6 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+#root {
+  background-color: rgb(17, 24, 39); /* Equivalent to bg-gray-900 */
+  min-height: 100vh; /* Full viewport height */
+  min-width: 100vw; /* Full viewport width */
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
