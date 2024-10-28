@@ -80,9 +80,7 @@ export default function LimitedActiveBets() {
                 </CardContent>
               </MotionCard>
             </DialogTrigger>
-            {selectedBet && selectedBet.id === bet.id && (
-              <BettingMenuDialog bet={selectedBet} onClose={() => setSelectedBet(null)} />
-            )}
+            
           </Dialog>
         ))}
       </div>

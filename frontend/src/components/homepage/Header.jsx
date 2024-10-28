@@ -1,19 +1,38 @@
 import React, { useState } from 'react';
-import { Briefcase, User, Settings, Book, Share2, BookOpen, MessageSquare, ArrowRight } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext'; // Add this import
+import { 
+  Briefcase, 
+  User, 
+  Settings, 
+  Book, 
+  Share2, 
+  BookOpen, 
+  MessageSquare, 
+  LogOut,
+  ChevronRight  // Use ChevronRight instead of ArrowRight or import ArrowRight if needed
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Link, NavLink } from 'react-router-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Link, NavLink, useNavigate } from 'react-router-dom'; // Add useNavigate
 import { motion } from 'framer-motion';
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { user, logout } = useAuth(); // Add auth context
+  const navigate = useNavigate();
   const tabs = [
     { name: 'Active Bets', path: '/activebets' },
     { name: 'Expired Bets', path: '/expiredbets' },
     { name: 'Leaderboard', path: '/leaderboard' },
     { name: 'My Bets', path: '/mybets' },
   ];
+  const handleLogout = async () => {
+    try {
+        await logout();
+        navigate('/'); // Redirect to landing page after logout
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+};
 
   return (
     <header className="bg-gray-900 border-b border-gray-700">
@@ -32,44 +51,62 @@ export default function Header() {
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-                  <AvatarFallback className="bg-yellow-500 text-gray-900">U</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-48 bg-gray-800 text-gray-200 rounded-md shadow-lg border border-gray-700"
-              >
-                <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                  <User className="mr-2 h-5 w-5 text-yellow-400" />
-                  <Link to="/profile">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                  <Settings className="mr-2 h-5 w-5 text-yellow-400" />
-                  <Link to="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                  <Book className="mr-2 h-5 w-5 text-yellow-400" />
-                  <Link to="/rules">Rules</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                  <Share2 className="mr-2 h-5 w-5 text-yellow-400" />
-                  <Link to="/refer">Refer and Earn</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                  <BookOpen className="mr-2 h-5 w-5 text-yellow-400" />
-                  <a href="https://placement-portal-frontend-xi.vercel.app/" target="_blank" rel="noopener noreferrer">
-                    Resources
-                  </a>
+                <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                        <AvatarImage src="/placeholder.svg?height=40&width=40" alt={user?.name || 'User'} />
+                        <AvatarFallback className="bg-yellow-500 text-gray-900">
+                            {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                        </AvatarFallback>
+                    </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                    align="end"
+                    className="w-48 bg-gray-800 text-gray-200 rounded-md shadow-lg border border-gray-700"
+                >
+                    {/* User info section */}
+                    <div className="px-2 py-1.5 border-b border-gray-700">
+                        <p className="text-sm font-medium">{user?.name}</p>
+                        <p className="text-xs text-gray-400">{user?.email}</p>
+                    </div>
 
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                  <MessageSquare className="mr-2 h-5 w-5 text-yellow-400" />
-                  <Link to="/chatbot">Chat Bot</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+                    <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
+                        <User className="mr-2 h-5 w-5 text-yellow-400" />
+                        <Link to="/profile">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
+                        <Settings className="mr-2 h-5 w-5 text-yellow-400" />
+                        <Link to="/settings">Settings</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
+                        <Book className="mr-2 h-5 w-5 text-yellow-400" />
+                        <Link to="/rules">Rules</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
+                        <Share2 className="mr-2 h-5 w-5 text-yellow-400" />
+                        <Link to="/refer">Refer and Earn</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
+                        <BookOpen className="mr-2 h-5 w-5 text-yellow-400" />
+                        <a href="https://placement-portal-frontend-xi.vercel.app/" target="_blank" rel="noopener noreferrer">
+                            Resources
+                        </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
+                        <MessageSquare className="mr-2 h-5 w-5 text-yellow-400" />
+                        <Link to="/chatbot">Chat Bot</Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator className="bg-gray-700" />
+                    
+                    {/* Logout button */}
+                    <DropdownMenuItem 
+                        className="flex items-center p-2 hover:bg-red-600/20 text-red-400 transition-colors cursor-pointer"
+                        onClick={handleLogout}
+                    >
+                        <LogOut className="mr-2 h-5 w-5" />
+                        Logout
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
             </DropdownMenu>
           
         </div>
@@ -88,7 +125,7 @@ export default function Header() {
                   animate={{ x: [0, 20, 0], scale: 1.2 }}
                   transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                 >
-                  <ArrowRight className="h-6 w-6 text-gray-900" />
+                  <ChevronRight className="h-6 w-6 text-gray-900" />
                 </motion.div>
               </span>
             </div>

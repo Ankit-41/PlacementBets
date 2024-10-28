@@ -1,8 +1,7 @@
-// App.js
+// App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-// Import Components
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/homepage/Header';
 import HomePage from './components/homepage/HomePage';
 import Leaderboard from './components/LeaderBoard/LeaderBoard';
@@ -10,37 +9,69 @@ import ActiveBets from './components/ActiveBets/ActiveBets';
 import ExpiredBets from './components/ExpiredBets/ExpiredBets';
 import MyBets from './components/MyBets/MyBets';
 import LandingPage from './components/Aaiye/LandingPage';
-import LimitedActiveBets from './components/Aaiye/LimitedActiveBets';
-// import LandingPage from './components/Aaiye/LandingPage';
-// Footer (assuming FooterDescription is the footer)
 import FooterDescription from './components/homepage/FooterDescription';
+import { useAuth } from './contexts/AuthContext';
 
-import './App.css'; // Global styles
+const ProtectedLayout = ({ children }) => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Navigate to="/" />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 flex flex-col">
+      <Header />
+      <main className="flex-1">
+        {children}
+      </main>
+      <FooterDescription />
+    </div>
+  );
+};
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <LandingPage />
-        {/* Header appears on all pages */}
-        <Header />
-
-        {/* Define Routes */}
+    <AuthProvider>
+      <Router>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/landing" element={<LandingPage />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/activebets" element={<ActiveBets />} />
-          <Route path="/expiredbets" element={<ExpiredBets />} />
-          <Route path="/mybets" element={<MyBets />} />
-          <Route path="/limitedactivebets" element={<LimitedActiveBets />} />
-          {/* Add more routes as needed */}
+          <Route path="/" element={<LandingPage />} />
+          
+          <Route path="/home" element={
+            <ProtectedLayout>
+              <HomePage />
+            </ProtectedLayout>
+          } />
+          
+          <Route path="/leaderboard" element={
+            <ProtectedLayout>
+              <Leaderboard />
+            </ProtectedLayout>
+          } />
+          
+          <Route path="/activebets" element={
+            <ProtectedLayout>
+              <ActiveBets />
+            </ProtectedLayout>
+          } />
+          
+          <Route path="/expiredbets" element={
+            <ProtectedLayout>
+              <ExpiredBets />
+            </ProtectedLayout>
+          } />
+          
+          <Route path="/mybets" element={
+            <ProtectedLayout>
+              <MyBets />
+            </ProtectedLayout>
+          } />
+          
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-
-        {/* Footer appears on all pages */}
-        <FooterDescription />
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

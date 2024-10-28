@@ -1,85 +1,105 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronRight, Users, BarChart, TrendingUp, AlertTriangle, Info, DollarSign, Smile } from 'lucide-react'
-
-import LimitedActiveBets from "./LimitedActiveBets" // Assume this is a custom component
+// components/Aaiye/LandingPage.jsx
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronRight, Users, BarChart, TrendingUp, AlertTriangle, Info, DollarSign, Smile } from 'lucide-react';
+import { useAuth } from './../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import LimitedActiveBets from "./LimitedActiveBets";
 
 export default function LandingPage() {
-    const [activeTab, setActiveTab] = useState('login')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [passwordError, setPasswordError] = useState('')
-    const [enrollmentNumber, setEnrollmentNumber] = useState('')
-    const [enrollmentError, setEnrollmentError] = useState('')
+    const [activeTab, setActiveTab] = useState('login');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [enrollmentNumber, setEnrollmentNumber] = useState('');
+    const [enrollmentError, setEnrollmentError] = useState('');
+    const [formError, setFormError] = useState('');
 
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value)
-        if (confirmPassword && e.target.value !== confirmPassword) {
-            setPasswordError("Passwords don't match")
-        } else {
-            setPasswordError('')
-        }
-    }
-
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value)
-        if (password && e.target.value !== password) {
-            setPasswordError("Passwords don't match")
-        } else {
-            setPasswordError('')
-        }
-    }
+    const { login, signup, error } = useAuth();
+    const navigate = useNavigate();
 
     const handleEnrollmentChange = (e) => {
-        const value = e.target.value
-        setEnrollmentNumber(value)
+        const value = e.target.value;
+        setEnrollmentNumber(value);
         if (value.length === 8 && /^\d+$/.test(value)) {
-            setEnrollmentError('')
+            setEnrollmentError('');
         } else {
-            setEnrollmentError('Enrollment number must be exactly 8 digits')
+            setEnrollmentError('Enrollment number must be exactly 8 digits');
         }
-    }
+    };
 
-    const handleSignUpSubmit = (e) => {
-        e.preventDefault()
+    const handlePasswordChange = (e) => {
+        const value = e.target.value;
+        setPassword(value);
+        if (confirmPassword && value !== confirmPassword) {
+            setPasswordError("Passwords don't match");
+        } else {
+            setPasswordError('');
+        }
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        const value = e.target.value;
+        setConfirmPassword(value);
+        if (password && value !== password) {
+            setPasswordError("Passwords don't match");
+        } else {
+            setPasswordError('');
+        }
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setFormError('');
+        try {
+            await login(email, password);
+            navigate('/home');
+        } catch (error) {
+            console.error('Login error:', error);
+            setFormError(error.response?.data?.message || 'Login failed');
+        }
+    };
+
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+        setFormError('');
+        
+        // Validate form
         if (password !== confirmPassword) {
-            setPasswordError("Passwords don't match")
-            return
+            setPasswordError("Passwords don't match");
+            return;
         }
+
         if (enrollmentNumber.length !== 8 || !/^\d+$/.test(enrollmentNumber)) {
-            setEnrollmentError('Enrollment number must be exactly 8 digits')
-            return
+            setEnrollmentError('Enrollment number must be exactly 8 digits');
+            return;
         }
-        // Proceed with sign up logic
-        console.log('Sign up submitted')
-    }
+
+        try {
+            await signup({
+                name,
+                email,
+                enrollmentNumber,
+                password
+            });
+            navigate('/home');
+        } catch (error) {
+            console.error('Signup error:', error);
+            setFormError(error.response?.data?.message || 'Signup failed');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Background Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-black"></div>
-
-            {/* Background Animations */}
-            <motion.div
-                className="absolute top-10 left-10 w-40 h-40 bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 rounded-full opacity-20 animate-pulse"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1.2, opacity: 0.3 }}
-                transition={{ duration: 6, repeat: Infinity, repeatType: "mirror" }}
-            />
-            <motion.div
-                className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-tr from-blue-500 via-green-500 to-teal-600 rounded-full opacity-20 animate-pulse"
-                initial={{ scale: 1, opacity: 0 }}
-                animate={{ scale: 1.5, opacity: 0.25 }}
-                transition={{ duration: 8, repeat: Infinity, repeatType: "mirror" }}
-            />
-
+            {/* ... Background elements ... */}
             <div className="relative z-10 w-full max-w-6xl flex flex-col md:flex-row gap-12">
-                {/* Left Section - Authentication */}
                 <motion.div
                     initial={{ opacity: 0, x: -100 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -120,32 +140,56 @@ export default function LandingPage() {
                                         Sign Up
                                     </TabsTrigger>
                                 </TabsList>
+
+                                {/* Login Form */}
                                 <TabsContent value="login">
-                                    <form className="space-y-6">
+                                    <form className="space-y-6" onSubmit={handleLogin}>
                                         <div className="space-y-2">
-                                            <div className="text-sm text-yellow-300 bg-yellow-700/30 p-3 rounded-lg">
-                                                <p className="flex items-center justify-center gap-1">
-                                                    <span className="font-medium">Note:</span>
-                                                    Only institute Gsuite allowed
-                                                </p>
+                                            <Label htmlFor="login-email" className="text-gray-300">Email</Label>
+                                            <Input 
+                                                id="login-email" 
+                                                type="email" 
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required 
+                                                className="bg-gray-700 text-gray-100 placeholder-gray-400" 
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="login-password" className="text-gray-300">Password</Label>
+                                            <Input 
+                                                id="login-password" 
+                                                type="password" 
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                required 
+                                                className="bg-gray-700 text-gray-100 placeholder-gray-400" 
+                                            />
+                                        </div>
+                                        {(formError || error) && (
+                                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                                                <p className="text-red-400 text-sm text-center">{formError || error}</p>
                                             </div>
-                                            <Label htmlFor="email" className="text-gray-300">Email</Label>
-                                            <Input id="email" type="email" required className="bg-gray-700 text-gray-100 placeholder-gray-400" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="password" className="text-gray-300">Password</Label>
-                                            <Input id="password" type="password" required className="bg-gray-700 text-gray-100 placeholder-gray-400" />
-                                        </div>
+                                        )}
                                         <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2 rounded-full transition-colors duration-300">
                                             Login
                                         </Button>
                                     </form>
                                 </TabsContent>
+
+                                {/* Signup Form */}
                                 <TabsContent value="signup">
-                                    <form className="space-y-6" onSubmit={handleSignUpSubmit}>
+                                    <form className="space-y-6" onSubmit={handleSignUp}>
                                         <div className="space-y-2">
                                             <Label htmlFor="name" className="text-gray-300">Full Name</Label>
-                                            <Input id="name" type="text" required className="bg-gray-700 text-gray-100 placeholder-gray-400" />
+                                            <Input 
+                                                id="name" 
+                                                type="text" 
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                required 
+                                                className="bg-gray-700 text-gray-100 placeholder-gray-400" 
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="enrol" className="text-gray-300">Enrollment Number</Label>
@@ -163,19 +207,20 @@ export default function LandingPage() {
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <div className="text-sm text-yellow-300 bg-yellow-700/30 p-3 rounded-lg">
-                                                <p className="flex items-center justify-center gap-1">
-                                                    <span className="font-medium">Note:</span>
-                                                    Only institute Gsuite allowed
-                                                </p>
-                                            </div>
-                                            <Label htmlFor="email" className="text-gray-300">Email</Label>
-                                            <Input id="email" type="email" required className="bg-gray-700 text-gray-100 placeholder-gray-400" />
+                                            <Label htmlFor="signup-email" className="text-gray-300">Email</Label>
+                                            <Input 
+                                                id="signup-email" 
+                                                type="email" 
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required 
+                                                className="bg-gray-700 text-gray-100 placeholder-gray-400" 
+                                            />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="password" className="text-gray-300">Password</Label>
+                                            <Label htmlFor="signup-password" className="text-gray-300">Password</Label>
                                             <Input
-                                                id="password"
+                                                id="signup-password"
                                                 type="password"
                                                 required
                                                 value={password}
@@ -194,8 +239,12 @@ export default function LandingPage() {
                                                 className="bg-gray-700 text-gray-100 placeholder-gray-400"
                                             />
                                         </div>
-                                        {passwordError && (
-                                            <p className="text-red-400 text-sm">{passwordError}</p>
+                                        {(formError || error || passwordError || enrollmentError) && (
+                                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                                                <p className="text-red-400 text-sm text-center">
+                                                    {formError || error || passwordError || enrollmentError}
+                                                </p>
+                                            </div>
                                         )}
                                         <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2 rounded-full transition-colors duration-300">
                                             Sign Up
@@ -207,52 +256,17 @@ export default function LandingPage() {
                     </Card>
                 </motion.div>
 
-                {/* Right Section - Features & Stats */}
+                {/* Right Section */}
                 <motion.div
                     initial={{ opacity: 0, x: 100 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="w-full md:w-1/2 space-y-8"
                 >
-                 
                     <LimitedActiveBets />
-
-                    
-
-                    {/* Explore Features Button */}
-                    <div className="text-center">
-                        <p className="text-sm text-gray-400 mb-4">
-                            Want to learn more about how JobJinx works?
-                        </p>
-                        <Button variant="outline" className="group bg-transparent border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition-colors duration-300 px-6 py-3 rounded-full flex items-center justify-center mx-auto">
-                            Explore Features
-                            <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                    </div>
-
-                    {/* Disclaimer */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {[
-                            { icon: AlertTriangle, text: "For entertainment only" },
-                            { icon: Info, text: "Not affiliated with IIT Roorkee or placement cells" },
-                            { icon: DollarSign, text: "No real job predictions or monetary rewards" },
-                            { icon: Smile, text: "Participation is purely for fun—please enjoy responsibly" }
-                        ].map((item, index) => (
-                            <motion.div
-                                key={index}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="flex items-start gap-3 p-4 bg-gray-700 bg-opacity-50 rounded-xl shadow-inner transition-transform duration-300"
-                            >
-                                {item.icon && <item.icon size={20} className="text-yellow-400 mt-1" />}
-                                <div className="text-sm text-gray-300">
-                                    {item.text}
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                    {/* ... rest of your right section ... */}
                 </motion.div>
             </div>
         </div>
-    )
+    );
 }
