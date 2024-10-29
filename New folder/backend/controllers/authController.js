@@ -102,42 +102,50 @@ exports.login = async (req, res, next) => {
     });
   }
 };
+
 exports.protect = async (req, res, next) => {
+  let token;
+  
+  // 1) Getting token and check if it's there
+  if (
+    req.headers.authorization && 
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
+  if (!token) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'You are not logged in! Please log in to get access.'
+    });
+  }
+
   try {
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies.jwt) {
-      token = req.cookies.jwt;
-    }
-
-    if (!token) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'You are not logged in! Please log in to get access.'
-      });
-    }
-
+    // 2) Verification token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
 
-    if (!user) {
+    // 3) Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
       return res.status(401).json({
         status: 'fail',
         message: 'The user belonging to this token no longer exists.'
       });
     }
 
-    req.user = user;
+    // GRANT ACCESS TO PROTECTED ROUTE
+    req.user = currentUser;
     next();
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       status: 'fail',
-      message: 'Invalid token or token expired'
+      message: 'Invalid token or session expired'
     });
   }
 };
-
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),

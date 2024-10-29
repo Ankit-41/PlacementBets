@@ -13,44 +13,96 @@ const api = axios.create({
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Try to get user from localStorage on initial load
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Update axios interceptor to include token
-  api.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
+  // Set up axios interceptors
+  useEffect(() => {
+    // Request interceptor
+    api.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
-  const setAuthToken = (token) => {
-    if (token) {
+    // Response interceptor
+    api.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response?.status === 401) {
+          // Clear auth state on 401 errors
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+        return Promise.reject(error);
+      }
+    );
+  }, []);
+
+  const setSession = (token, userData) => {
+    if (token && userData) {
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setUser(userData);
     } else {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       delete api.defaults.headers.common['Authorization'];
+      setUser(null);
     }
   };
 
-  const signup = async (userData) => {
+  const checkAuth = async () => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/signup', userData);
-      setUser(response.data.data.user);
-      setAuthToken(response.data.token);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setSession(null, null);
+        return;
+      }
+
+      const response = await api.get('/auth/me');
+      setSession(token, response.data.data.user);
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setSession(null, null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check auth status on mount and setup refresh interval
+  useEffect(() => {
+    checkAuth();
+    
+    // Periodically check auth status (optional)
+    const interval = setInterval(checkAuth, 15 * 60 * 1000); // Check every 15 minutes
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const login = async (email, password) => {
+    try {
+      setLoading(true);
+      const response = await api.post('/auth/login', { email, password });
+      setSession(response.data.token, response.data.data.user);
       setError(null);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'An error occurred during signup';
+      const errorMessage = error.response?.data?.message || 'Invalid credentials';
       setError(errorMessage);
       throw error;
     } finally {
@@ -58,16 +110,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
+  const signup = async (userData) => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/login', { email, password });
-      setUser(response.data.data.user);
-      setAuthToken(response.data.token);
+      const response = await api.post('/auth/signup', userData);
+      setSession(response.data.token, response.data.data.user);
       setError(null);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Invalid email or password';
+      const errorMessage = error.response?.data?.message || 'Signup failed';
       setError(errorMessage);
       throw error;
     } finally {
@@ -79,8 +130,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       await api.get('/auth/logout');
-      setAuthToken(null);
-      setUser(null);
+      setSession(null, null);
       setError(null);
     } catch (error) {
       console.error('Logout error:', error);
@@ -89,28 +139,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const checkAuth = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await api.get('/auth/me');
-      setUser(response.data.data.user);
-    } catch (error) {
-      setAuthToken(null);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const value = {
     user,
     loading,
@@ -118,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     login,
     signup,
     logout,
+    checkAuth,
     isAuthenticated: !!user
   };
 
