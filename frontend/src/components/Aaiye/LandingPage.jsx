@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight, Users, BarChart, TrendingUp, AlertTriangle, Info, DollarSign, Smile } from 'lucide-react';
 import { useAuth } from './../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import LimitedActiveBets from "./LimitedActiveBets";
+// import LimitedActiveBets from "./LimitedActiveBets";
 
 export default function LandingPage() {
     const [activeTab, setActiveTab] = useState('login');
@@ -263,7 +263,7 @@ export default function LandingPage() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="w-full md:w-1/2 space-y-8"
                 >
-                    <LimitedActiveBets />
+                    {/* <LimitedActiveBets /> */}
                     {/* ... rest of your right section ... */}
                 </motion.div>
             </div>

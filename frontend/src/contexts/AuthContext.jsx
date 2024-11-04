@@ -18,6 +18,9 @@ export const AuthProvider = ({ children }) => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -68,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setSession(null, null);
         return;
@@ -87,10 +90,10 @@ export const AuthProvider = ({ children }) => {
   // Check auth status on mount and setup refresh interval
   useEffect(() => {
     checkAuth();
-    
+
     // Periodically check auth status (optional)
     const interval = setInterval(checkAuth, 15 * 60 * 1000); // Check every 15 minutes
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -139,6 +142,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Add method to update user tokens
+  const updateUserTokens = (newTokenAmount) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        tokens: newTokenAmount
+      };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
+  // Method to refresh user data from server
+  const refreshUserData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.data.status === 'success') {
+        const updatedUser = response.data.data.user;
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -147,11 +181,17 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     checkAuth,
+    updateUserTokens, // Add this to the context value
+    refreshUserData,  // Add this to the context value
     isAuthenticated: !!user
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+
+
+
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

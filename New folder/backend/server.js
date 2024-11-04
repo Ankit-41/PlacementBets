@@ -5,7 +5,8 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
-
+const companyRoutes = require('./routes/companyRoutes');
+const betRoutes = require('./routes/betRoutes');
 const app = express();
 
 // Enable CORS with credentials
@@ -25,6 +26,9 @@ connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
+// const companyRoutes = require('./routes/companyRoutes');
+app.use('/api/companies', companyRoutes);
+app.use('/api/bets', betRoutes);
 
 // Basic error handling
 app.use((err, req, res, next) => {

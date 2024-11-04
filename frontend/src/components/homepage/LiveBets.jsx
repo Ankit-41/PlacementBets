@@ -1,132 +1,224 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Play, BarChart, Code, Package, Database, Brain, Cpu, MoreHorizontal } from 'lucide-react';
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { motion } from 'framer-motion';
-import { BettingMenuDialog } from '../ActiveBets/BettingMenuDialog';
-import ActiveBets from '../ActiveBets/ActiveBets';
+'use client'
 
-// Mock data for live events
-const liveEvents = [
-  { company: 'TechCorp', users: [{ name: 'Alice', odds: '1.5x' }, { name: 'Bob', odds: '1.3x' }, { name: 'Charlie', odds: '1.8x' }] },
-  { company: 'hihne', users: [{ name: 'Grace', odds: '1.7x' }, { name: 'Henry', odds: '1.3x' }, { name: 'Ivy', odds: '1.5x' }] },
-  { company: 'FinanceInc', users: [{ name: 'David', odds: '1.2x' }, { name: 'Eve', odds: '1.6x' }, { name: 'Frank', odds: '1.4x' }] },
-  { company: 'ConsultCo', users: [{ name: 'Grace', odds: '1.7x' }, { name: 'Henry', odds: '1.3x' }, { name: 'Ivy', odds: '1.5x' }] },
-  { company: 'ebeig', users: [{ name: 'Grace', odds: '1.7x' }, { name: 'Henry', odds: '1.3x' }, { name: 'Ivy', odds: '1.5x' }] },
-];
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { Card, CardContent } from "@/components/ui/card"
+import { Play, BarChart, Code, Package, Database, Brain, Cpu, MoreHorizontal, Zap, TrendingUp, Clock, Loader } from 'lucide-react'
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from 'framer-motion'
+import { BettingMenuDialog } from '../ActiveBets/BettingMenuDialog'
+import ActiveBets from '../ActiveBets/ActiveBets'
 
-// Map categories to icons
 const categoryIcons = {
   Quant: BarChart,
   SDE: Code,
-  Product: Package,
+  product: Package,
   'Data Analyst': Database,
   'Data Scientist': Brain,
-  Core: Cpu,
+  core: Cpu,
   Misc: MoreHorizontal,
-};
+}
 
-const MotionCard = motion(Card);
+const MotionCard = motion(Card)
 
 export default function LiveBets() {
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showAllBets, setShowAllBets] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [showAllBets, setShowAllBets] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [liveEvents, setLiveEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchLiveEvents = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const response = await axios.get('http://localhost:5000/api/companies/active', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        
+        if (response.data.status === 'success' && Array.isArray(response.data.data)) {
+          const transformedEvents = response.data.data.map(event => ({
+            id: event._id,
+            company: event.company,
+            category: event.profile,
+            timeLeft: event.expiresIn,
+            totalTokenBet: event.totalTokenBet,
+            users: event.individuals.map(user => ({
+              id: user.id,
+              name: user.name,
+              odds: `${user.forStake}x/${user.againstStake}x`,
+              enrollmentNumber: user.enrollmentNumber,
+              forTokens: user.forTokens,
+              againstTokens: user.againstTokens
+            }))
+          }))
+          setLiveEvents(transformedEvents)
+        } else {
+          throw new Error('Invalid data format received from server')
+        }
+      } catch (err) {
+        console.error('Error fetching live events:', err)
+        setError(err.message || 'Failed to load live events')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLiveEvents()
+  }, [])
+
+  const filteredEvents = activeCategory === 'All' 
+    ? liveEvents 
+    : liveEvents.filter(event => event.category === activeCategory)
 
   if (showAllBets) {
-    return <ActiveBets />;
+    return <ActiveBets />
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+        <Loader className="w-12 h-12 text-yellow-400 animate-spin" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+        <p className="text-red-500 text-xl">{error}</p>
+      </div>
+    )
   }
 
   return (
-    <div className="bg-gray-900 p-4 sm:p-6 rounded-lg shadow-lg">
-      {/* Live Events Categories */}
-      <h2 className="text-2xl font-semibold mb-4 flex items-center text-gray-200">
-        <Play className="mr-2 h-6 w-6 text-yellow-500" /> Live Events
+    <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-lg shadow-2xl">
+      <h2 className="text-3xl font-bold mb-6 flex items-center text-yellow-400">
+        <Zap className="mr-2 h-8 w-8" /> Live Events
       </h2>
       
-      <ScrollArea className="w-full rounded-lg border border-gray-700 bg-gray-800 bg-opacity-90 backdrop-blur-md p-2 mb-4 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-700">
-        <div className="flex space-x-4 py-3 px-2 sm:space-x-16">
-          {['Quant', 'SDE', 'Product', 'Data Analyst', 'Data Scientist', 'Core', 'Misc'].map((category) => {
-            const Icon = categoryIcons[category];
-            return (
-              <div key={category} className="flex flex-col items-center">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-yellow-500 flex items-center justify-center">
-                  <Icon className="h-7 w-7 sm:h-8 sm:w-8 text-gray-900" />
-                </div>
-                <span className="mt-2 text-sm sm:text-base text-gray-200">{category}</span>
-              </div>
-            );
-          })}
+      <ScrollArea className="w-full rounded-lg border border-gray-700 bg-gray-800 bg-opacity-90 backdrop-blur-md p-4 mb-8">
+        <div className="flex space-x-4 py-3 px-2">
+          <CategoryButton category="All" activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
+          {Object.keys(categoryIcons).map((category) => (
+            <CategoryButton key={category} category={category} activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
+          ))}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      {/* Live Bets Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-200 mb-2 sm:mb-0">Live Bets</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-2xl font-semibold text-gray-200">Hot Bets</h3>
         <Button
           variant="outline"
           onClick={() => setShowAllBets(true)}
-          className="w-full sm:w-auto bg-yellow-500 text-gray-900 hover:bg-yellow-600"
-          aria-label="View All Bets"
+          className="bg-yellow-500 text-gray-900 hover:bg-yellow-600 font-semibold px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105"
         >
-          View All
+          View All Bets
         </Button>
       </div>
 
-      {/* Live Bets Cards */}
-      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {liveEvents.slice(0, 3).map((event, index) => (
-          <Dialog key={index} onOpenChange={(open) => {
-            if (open) setSelectedEvent(event);
-            else setSelectedEvent(null);
-          }}>
-            <DialogTrigger asChild>
-              <MotionCard 
-                className="cursor-pointer bg-gray-800 bg-opacity-80 p-4 rounded-xl overflow-hidden shadow-2xl relative transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                whileHover={{ scale: 1.05 }}
-                tabIndex={0} // Make card focusable for accessibility
-                aria-label={`View details for ${event.company}`}
-              >
-                <CardContent>
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-bold text-gray-200">{event.company}</h3>
-                    <motion.span
-                      className="text-xs bg-yellow-500 text-gray-900 px-2 py-1 rounded-full"
-                      animate={{ opacity: [1, 0.5, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      aria-label="Live Status"
-                    >
-                      LIVE
-                    </motion.span>
-                  </div>
-                  {event.users.map((user, userIndex) => (
-                    <div key={userIndex} className="flex justify-between items-center text-sm sm:text-base text-gray-300 mb-2">
-                      <span>{user.name}</span>
-                      <span className="font-semibold text-yellow-400">{user.odds}</span>
-                    </div>
-                  ))}
-                </CardContent>
-              </MotionCard>
-            </DialogTrigger>
-            {selectedEvent && (
-              <BettingMenuDialog 
-                bet={{
-                  company: selectedEvent.company,
-                  users: selectedEvent.users.map((user, index) => ({
-                    id: index + 1,
-                    name: user.name,
-                    enrollmentNumber: `EN${(index + 1).toString().padStart(3, '0')}`,
-                    stake: parseFloat(user.odds)
-                  }))
-                }} 
-                onClose={() => setSelectedEvent(null)} 
-              />
-            )}
-          </Dialog>
-        ))}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <AnimatePresence>
+          {filteredEvents.map((event, index) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
+              <Dialog onOpenChange={(open) => {
+                if (open) setSelectedEvent(event)
+                else setSelectedEvent(null)
+              }}>
+                <DialogTrigger asChild>
+                  <MotionCard 
+                    className="cursor-pointer bg-gradient-to-br from-gray-800 to-gray-700 p-6 rounded-xl overflow-hidden shadow-lg relative transition-all duration-300 hover:shadow-2xl"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <CardContent className="p-0">
+                      <div className="flex justify-between items-start mb-4">
+                        <h4 className="text-xl font-bold text-yellow-400">{event.company}</h4>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs bg-yellow-500 text-gray-900 px-2 py-1 rounded-full font-semibold">
+                            {event.category}
+                          </span>
+                          <motion.div
+                            className="w-3 h-3 rounded-full bg-green-500"
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          />
+                        </div>
+                      </div>
+                      {event.users.slice(0, 3).map((user, userIndex) => (
+                        <div key={userIndex} className="flex justify-between items-center text-gray-300 mb-2">
+                          <span>{user.name}</span>
+                          <span className="font-semibold text-yellow-400">{user.odds}</span>
+                        </div>
+                      ))}
+                      <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
+                        <span className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {event.timeLeft} left
+                        </span>
+                        <span className="flex items-center">
+                          <TrendingUp className="w-4 h-4 mr-1" />
+                          {event.totalTokenBet} tokens bet
+                        </span>
+                      </div>
+                    </CardContent>
+                  </MotionCard>
+                </DialogTrigger>
+                {selectedEvent && (
+                  <BettingMenuDialog 
+                    bet={{
+                      company: selectedEvent.company,
+                      users: selectedEvent.users.map(user => ({
+                        id: user.id,
+                        name: user.name,
+                        enrollmentNumber: user.enrollmentNumber,
+                        forStake: parseFloat(user.odds.split('/')[0]),
+                        againstStake: parseFloat(user.odds.split('/')[1]),
+                        forTokens: user.forTokens,
+                        againstTokens: user.againstTokens
+                      }))
+                    }} 
+                    onClose={() => setSelectedEvent(null)} 
+                  />
+                )}
+              </Dialog>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
-  );
+  )
+}
+
+function CategoryButton({ category, activeCategory, setActiveCategory }) {
+  const Icon = categoryIcons[category] || Play
+  return (
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => setActiveCategory(category)}
+      className={`flex flex-col items-center space-y-2 focus:outline-none ${
+        activeCategory === category ? 'text-yellow-400' : 'text-gray-400 hover:text-gray-200'
+      }`}
+    >
+      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+        activeCategory === category ? 'bg-yellow-500' : 'bg-gray-700'
+      }`}>
+        <Icon className="h-8 w-8" />
+      </div>
+      <span className="text-sm font-medium">{category}</span>
+    </motion.button>
+  )
 }
