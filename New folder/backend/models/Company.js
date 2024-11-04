@@ -30,6 +30,12 @@ const individualSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
+  },
+  result:{
+    type:String,
+     enum: ['awaited', 'won','lost'],
+    default: 'awaited'
+
   }
 });
 

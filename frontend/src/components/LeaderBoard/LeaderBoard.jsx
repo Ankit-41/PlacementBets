@@ -204,7 +204,7 @@ export default function Leaderboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-500 to-yellow-700 bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
           JobJinx Leaderboard
         </h1>
         <p className="text-lg text-gray-400">Celebrating Our Top Performers</p>
@@ -274,7 +274,7 @@ const LeaderboardTable = ({ data, hoveredUser, setHoveredUser }) => (
               <div className="flex items-center">
                 <Avatar className="w-8 h-8 mr-2">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="bg-yellow-500 text-gray-900">{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  <AvatarFallback className="bg-green-500 text-gray-900">{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <span className="text-gray-200">{user.name}</span>
               </div>
@@ -311,7 +311,7 @@ const AnimatedStatsCard = ({ title, value, icon }) => (
     whileHover={{ scale: 1.05 }}
     transition={{ type: "spring", stiffness: 400, damping: 10 }}
   >
-    <Card className="bg-gray-800 bg-opacity-80 border-2 border-yellow-500">
+    <Card className="bg-gray-800 bg-opacity-80 border-2 border-green-500">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-200">
           {title}

@@ -9,6 +9,26 @@ const Company = require('../models/Company');
 const calculateStakes = require('../utils/stakeCalculator');
 const { ErrorResponse } = require('../middleware/errorHandler');
 
+// Get user's bets
+router.get('/my-bets', protect, async (req, res, next) => {
+  try {
+    const bets = await Bet.find({ bettorId: req.user._id })
+      .sort({ createdAt: -1 }) // Sort by most recent first
+      .lean(); // Use lean for better performance since we don't need Mongoose document features
+
+    if (!bets) {
+      return next(new ErrorResponse('No bets found', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: bets
+    });
+  } catch (error) {
+    next(new ErrorResponse(error.message || 'Error fetching bets', 500));
+  }
+});
+
 // Place bets route with stake updates
 router.post('/place-bets', protect, async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -16,7 +36,8 @@ router.post('/place-bets', protect, async (req, res, next) => {
 
   try {
     const { companyId, bets } = req.body;
-
+console.log(bets);
+console.log(companyId);
     // Validate request data
     if (!companyId || !bets || !Array.isArray(bets) || bets.length === 0) {
       return next(new ErrorResponse('Invalid request data', 400));
@@ -83,6 +104,7 @@ router.post('/place-bets', protect, async (req, res, next) => {
       return new Bet({
         bettorId: req.user._id,
         companyId,
+        company:company.company,
         targetUserId: bet.targetUserId,
         targetUserName: bet.targetUserName,
         targetUserEnrollment: bet.targetUserEnrollment,

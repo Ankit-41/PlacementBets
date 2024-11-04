@@ -67,7 +67,7 @@ export default function ActiveBets() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-amber-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
@@ -75,8 +75,8 @@ export default function ActiveBets() {
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-        <AlertTriangle className="text-amber-500 w-16 h-16 mb-4" />
-        <div className="text-amber-500 text-xl font-semibold">{error}</div>
+        <AlertTriangle className="text-emerald-500 w-16 h-16 mb-4" />
+        <div className="text-emerald-500 text-xl font-semibold">{error}</div>
       </div>
     )
   }
@@ -89,7 +89,7 @@ export default function ActiveBets() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
           Active Bets
         </h1>
         <p className="text-gray-400 text-lg">Place your bets on upcoming placements</p>
@@ -112,7 +112,7 @@ export default function ActiveBets() {
             >
               <DialogTrigger asChild>
                 <MotionCard 
-                  className="cursor-pointer bg-gray-800 bg-opacity-60 backdrop-blur-md hover:shadow-2xl transition-all duration-300 rounded-2xl border border-gray-700 hover:border-amber-500 overflow-hidden"
+                  className="cursor-pointer bg-gray-800 bg-opacity-60 backdrop-blur-md hover:shadow-2xl transition-all duration-300 rounded-2xl border border-gray-700 hover:border-emerald-500 overflow-hidden"
                   whileHover={{ scale: 1.03 }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -120,19 +120,19 @@ export default function ActiveBets() {
                 >
                   <CardHeader className="flex flex-col gap-2 bg-gradient-to-r from-gray-800 to-gray-700 p-4">
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-xl font-bold text-amber-400">{bet.company}</CardTitle>
-                      <Badge variant="secondary" className="flex items-center gap-1 bg-amber-500 text-gray-900 px-2 py-1 rounded-full">
+                      <CardTitle className="text-xl font-bold text-emerald-400">{bet.company}</CardTitle>
+                      <Badge variant="secondary" className="flex items-center gap-1 bg-emerald-500 text-gray-900 px-2 py-1 rounded-full">
                         <Users className="h-4 w-4" />
                         {bet.users.length}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-400">
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-amber-500" />
+                        <Clock className="h-4 w-4 text-emerald-500" />
                         <span>Expires in: {bet.expiresIn}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4 text-amber-500" />
+                        <TrendingUp className="h-4 w-4 text-emerald-500" />
                         <span>Tokens bet: {bet.totalTokenBet}</span>
                       </div>
                     </div>
@@ -144,7 +144,7 @@ export default function ActiveBets() {
                         <div key={user.id} className="flex justify-between items-center bg-gray-700 rounded-lg p-3">
                           <span className="text-sm text-gray-200 font-medium">{user.name}</span>
                           <div className="flex gap-2">
-                            <Badge variant="outline" className="border-green-500 text-green-400 px-2 py-0.5 text-xs">
+                            <Badge variant="outline" className="border-blue-500 text-blue-400 px-2 py-0.5 text-xs">
                               For: {user.forStake}x
                             </Badge>
                             <Badge variant="outline" className="border-red-500 text-red-400 px-2 py-0.5 text-xs">
@@ -154,7 +154,7 @@ export default function ActiveBets() {
                         </div>
                       ))}
                     </div>
-                    <div className="mt-4 text-amber-500 text-sm font-medium flex items-center justify-end">
+                    <div className="mt-4 text-emerald-500 text-sm font-medium flex items-center justify-end">
                       View Details <ChevronRight className="ml-1 w-4 h-4" />
                     </div>
                   </CardContent>

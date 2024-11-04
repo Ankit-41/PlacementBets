@@ -168,11 +168,11 @@ export function BettingMenuDialog({ bet, onClose }) {
   return (
     <DialogContent className="max-w-4xl bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 border border-gray-700 rounded-xl shadow-2xl">
     <DialogHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 border-b border-gray-700 pb-4">
-      <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
+      <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
         {bet.company}
       </DialogTitle>
       <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-4">
-        <Badge variant="secondary" className="text-lg bg-amber-500 text-gray-900 px-3 py-1 rounded-full shadow-md">
+        <Badge variant="secondary" className="text-lg bg-emerald-500 text-gray-900 px-3 py-1 rounded-full shadow-md">
           <Coins className="h-5 w-5 mr-2" />
           Total Bet: {totalBetAmount} tokens
         </Badge>
@@ -196,10 +196,10 @@ export function BettingMenuDialog({ bet, onClose }) {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-800 border-b border-gray-700">
-              <TableHead className="text-amber-400 font-semibold">User</TableHead>
-              <TableHead className="text-amber-400 font-semibold">Enrollment</TableHead>
-              <TableHead className="text-amber-400 font-semibold">Stake</TableHead>
-              <TableHead className="text-amber-400 font-semibold text-center" colSpan={2}>Bet Amount</TableHead>
+              <TableHead className="text-emerald-400 font-semibold">User</TableHead>
+              <TableHead className="text-emerald-400 font-semibold">Enrollment</TableHead>
+              <TableHead className="text-emerald-400 font-semibold">Stake</TableHead>
+              <TableHead className="text-emerald-400 font-semibold text-center" colSpan={2}>Bet Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -217,7 +217,7 @@ export function BettingMenuDialog({ bet, onClose }) {
                 >
                   <TableCell className="font-medium">
                     <span
-                      className="cursor-pointer hover:text-amber-400 transition-colors duration-200"
+                      className="cursor-pointer hover:text-emerald-400 transition-colors duration-200"
                       onClick={() => handleProfileClick(user.enrollmentNumber)}
                     >
                       {user.name}
@@ -225,7 +225,7 @@ export function BettingMenuDialog({ bet, onClose }) {
                   </TableCell>
                   <TableCell>
                     <span
-                      className="cursor-pointer hover:text-amber-400 transition-colors duration-200 flex items-center"
+                      className="cursor-pointer hover:text-emerald-400 transition-colors duration-200 flex items-center"
                       onClick={() => handleProfileClick(user.enrollmentNumber)}
                     >
                       {user.enrollmentNumber}
@@ -234,7 +234,7 @@ export function BettingMenuDialog({ bet, onClose }) {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Badge variant="outline" className="border-green-500 text-green-400 px-2 py-0.5 text-xs">
+                      <Badge variant="outline" className="border-blue-500 text-blue-400 px-2 py-0.5 text-xs">
                         For: {user.forStake}x
                       </Badge>
                       <Badge variant="outline" className="border-red-500 text-red-400 px-2 py-0.5 text-xs">
@@ -245,7 +245,7 @@ export function BettingMenuDialog({ bet, onClose }) {
                   <TableCell className="w-64">
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center space-x-2">
-                        <ThumbsUp className="h-4 w-4 text-green-400" />
+                        <ThumbsUp className="h-4 w-4 text-blue-400" />
                         <Slider
                           value={[userData.forAmount]}
                           onValueChange={([value]) => handleBetChange(user.id, value, 'for')}
@@ -281,7 +281,7 @@ export function BettingMenuDialog({ bet, onClose }) {
         <Button 
           onClick={handleSubmitBet} 
           disabled={isSubmitting || selectedUsers === 0 || totalBetAmount <= 0}
-          className="bg-amber-500 text-gray-900 hover:bg-amber-600 font-semibold px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-emerald-500 text-gray-900 hover:bg-emerald-600 font-semibold px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Placing Bet...' : 'Submit Bet'}
         </Button>
@@ -290,7 +290,7 @@ export function BettingMenuDialog({ bet, onClose }) {
       <AlertDialog open={showLimitAlert} onOpenChange={setShowLimitAlert}>
         <AlertDialogContent className="bg-gray-800 text-gray-100 border border-gray-700 rounded-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-amber-400 flex items-center text-xl font-bold">
+            <AlertDialogTitle className="text-emerald-400 flex items-center text-xl font-bold">
               <AlertTriangle className="h-6 w-6 mr-2" />
               Selection Limit Reached
             </AlertDialogTitle>
@@ -298,7 +298,7 @@ export function BettingMenuDialog({ bet, onClose }) {
               You can't select more than 80% of the total users. Please adjust your selection.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogAction onClick={() => setShowLimitAlert(false)} className="bg-amber-500 text-gray-900 hover:bg-amber-600 font-semibold px-4 py-2 rounded-md transition-colors duration-200 mt-4">
+          <AlertDialogAction onClick={() => setShowLimitAlert(false)} className="bg-emerald-500 text-gray-900 hover:bg-emerald-600 font-semibold px-4 py-2 rounded-md transition-colors duration-200 mt-4">
             Close
           </AlertDialogAction>
         </AlertDialogContent>
