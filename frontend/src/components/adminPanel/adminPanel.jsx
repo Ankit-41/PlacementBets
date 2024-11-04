@@ -73,60 +73,78 @@ function ImprovedAdminPanel() {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (!selectedCompany) return;
+  // In your AdminPanel.jsx
 
-    setSubmitLoading(true);
-    setSubmitError('');
-    setSuccessMessage('');
+const handleSubmit = async () => {
+  if (!selectedCompany) return;
 
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
+  setSubmitLoading(true);
+  setSubmitError('');
+  setSuccessMessage('');
 
-    try {
-      const requests = [];
-
-      if (updatedCompanyStatus !== selectedCompany.status) {
-        const companyStatusRequest = axios.put(
-          `http://localhost:5000/api/companies/${selectedCompany._id}/status`,
-          { status: updatedCompanyStatus },
-          { headers }
-        );
-        requests.push(companyStatusRequest);
-      }
-
-      selectedCompany.individuals.forEach(individual => {
-        const newResult = updatedIndividualResults[individual.id];
-        if (newResult && newResult !== individual.result) {
-          const individualResultRequest = axios.put(
-            `http://localhost:5000/api/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
-            { result: newResult },
-            { headers }
-          );
-          requests.push(individualResultRequest);
-        }
-      });
-
-      if (requests.length === 0) {
-        setSubmitError('No changes to submit.');
-        setSubmitLoading(false);
-        return;
-      }
-
-      await Promise.all(requests);
-
-      setSuccessMessage('Changes submitted successfully.');
-      fetchCompanies();
-      setIsDialogOpen(false);
-    } catch (err) {
-      setSubmitError('Failed to submit changes: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setSubmitLoading(false);
-    }
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
   };
 
+  try {
+    const requests = [];
+
+    // Update company status if changed
+    if (updatedCompanyStatus !== selectedCompany.status) {
+      console.log('Updating company status:', {
+        companyId: selectedCompany._id,
+        status: updatedCompanyStatus
+      });
+      
+      const companyStatusRequest = axios.put(
+        `http://localhost:5000/api/admin/companies/${selectedCompany._id}/status`,
+        { status: updatedCompanyStatus },
+        { headers }
+      );
+      requests.push(companyStatusRequest);
+    }
+
+    // Update individual results if changed
+    for (const individual of selectedCompany.individuals) {
+      const newResult = updatedIndividualResults[individual.id];
+      if (newResult && newResult !== individual.result) {
+        console.log('Updating individual result:', {
+          companyId: selectedCompany._id,
+          individualId: individual.id,
+          result: newResult
+        });
+
+        const individualResultRequest = axios.put(
+          `http://localhost:5000/api/admin/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
+          { result: newResult },
+          { headers }
+        );
+        requests.push(individualResultRequest);
+      }
+    }
+
+    if (requests.length === 0) {
+      setSubmitError('No changes to submit.');
+      setSubmitLoading(false);
+      return;
+    }
+
+    // Execute all requests
+    const results = await Promise.all(requests);
+    console.log('Update results:', results);
+
+    setSuccessMessage('Changes submitted successfully and bets have been processed.');
+    await fetchCompanies(); // Refresh the companies list
+    setIsDialogOpen(false);
+  } catch (err) {
+    console.error('Submit error:', err);
+    setSubmitError('Failed to submit changes: ' + (err.response?.data?.message || err.message));
+  } finally {
+    setSubmitLoading(false);
+  }
+};
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'bg-green-500 text-white';

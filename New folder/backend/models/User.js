@@ -36,14 +36,18 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 1000 // Starting tokens for new users
   },
-  activeBets: [{
-    type: mongoose.Schema.ObjectId,
-    ref: 'Bet'
-  }],
-  expiredBets: [{
-    type: mongoose.Schema.ObjectId,
-    ref: 'Bet'
-  }],
+ wonBets:{
+  type:Number,
+  default:0
+ },
+ lostBets:{
+  type:Number,
+  default:0
+ },
+ streak:{
+  type:Number,
+  default:0
+ },
   successRate: {
     type: Number,
     default: 0
