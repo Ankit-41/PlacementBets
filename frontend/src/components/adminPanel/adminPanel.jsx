@@ -8,7 +8,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, TrendingUp, Users, AlertTriangle } from 'lucide-react';
-
+import { AddCompanyDialog } from './companydialog';
+import { PlusCircle } from 'lucide-react';
 function ImprovedAdminPanel() {
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -20,7 +21,8 @@ function ImprovedAdminPanel() {
   const [submitError, setSubmitError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  // Inside your AdminPanel component, add this state:
+  const [isAddCompanyDialogOpen, setIsAddCompanyDialogOpen] = useState(false);
   useEffect(() => {
     fetchCompanies();
   }, []);
@@ -75,76 +77,76 @@ function ImprovedAdminPanel() {
 
   // In your AdminPanel.jsx
 
-const handleSubmit = async () => {
-  if (!selectedCompany) return;
+  const handleSubmit = async () => {
+    if (!selectedCompany) return;
 
-  setSubmitLoading(true);
-  setSubmitError('');
-  setSuccessMessage('');
+    setSubmitLoading(true);
+    setSubmitError('');
+    setSuccessMessage('');
 
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  };
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
 
-  try {
-    const requests = [];
+    try {
+      const requests = [];
 
-    // Update company status if changed
-    if (updatedCompanyStatus !== selectedCompany.status) {
-      console.log('Updating company status:', {
-        companyId: selectedCompany._id,
-        status: updatedCompanyStatus
-      });
-      
-      const companyStatusRequest = axios.put(
-        `http://localhost:5000/api/admin/companies/${selectedCompany._id}/status`,
-        { status: updatedCompanyStatus },
-        { headers }
-      );
-      requests.push(companyStatusRequest);
-    }
-
-    // Update individual results if changed
-    for (const individual of selectedCompany.individuals) {
-      const newResult = updatedIndividualResults[individual.id];
-      if (newResult && newResult !== individual.result) {
-        console.log('Updating individual result:', {
+      // Update company status if changed
+      if (updatedCompanyStatus !== selectedCompany.status) {
+        console.log('Updating company status:', {
           companyId: selectedCompany._id,
-          individualId: individual.id,
-          result: newResult
+          status: updatedCompanyStatus
         });
 
-        const individualResultRequest = axios.put(
-          `http://localhost:5000/api/admin/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
-          { result: newResult },
+        const companyStatusRequest = axios.put(
+          `http://localhost:5000/api/admin/companies/${selectedCompany._id}/status`,
+          { status: updatedCompanyStatus },
           { headers }
         );
-        requests.push(individualResultRequest);
+        requests.push(companyStatusRequest);
       }
-    }
 
-    if (requests.length === 0) {
-      setSubmitError('No changes to submit.');
+      // Update individual results if changed
+      for (const individual of selectedCompany.individuals) {
+        const newResult = updatedIndividualResults[individual.id];
+        if (newResult && newResult !== individual.result) {
+          console.log('Updating individual result:', {
+            companyId: selectedCompany._id,
+            individualId: individual.id,
+            result: newResult
+          });
+
+          const individualResultRequest = axios.put(
+            `http://localhost:5000/api/admin/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
+            { result: newResult },
+            { headers }
+          );
+          requests.push(individualResultRequest);
+        }
+      }
+
+      if (requests.length === 0) {
+        setSubmitError('No changes to submit.');
+        setSubmitLoading(false);
+        return;
+      }
+
+      // Execute all requests
+      const results = await Promise.all(requests);
+      console.log('Update results:', results);
+
+      setSuccessMessage('Changes submitted successfully and bets have been processed.');
+      await fetchCompanies(); // Refresh the companies list
+      setIsDialogOpen(false);
+    } catch (err) {
+      console.error('Submit error:', err);
+      setSubmitError('Failed to submit changes: ' + (err.response?.data?.message || err.message));
+    } finally {
       setSubmitLoading(false);
-      return;
     }
-
-    // Execute all requests
-    const results = await Promise.all(requests);
-    console.log('Update results:', results);
-
-    setSuccessMessage('Changes submitted successfully and bets have been processed.');
-    await fetchCompanies(); // Refresh the companies list
-    setIsDialogOpen(false);
-  } catch (err) {
-    console.error('Submit error:', err);
-    setSubmitError('Failed to submit changes: ' + (err.response?.data?.message || err.message));
-  } finally {
-    setSubmitLoading(false);
-  }
-};
+  };
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'bg-green-500 text-white';
@@ -159,10 +161,22 @@ const handleSubmit = async () => {
       <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
     </div>
   );
+  const handleCompanyAdded = () => {
+    fetchCompanies();  // Refresh the companies list
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <h1 className="text-4xl font-bold mb-8 text-center">Betting Admin Panel</h1>
+
+
+      <Button
+        onClick={() => setIsAddCompanyDialogOpen(true)}
+        className="bg-green-600 hover:bg-green-700"
+      >
+        <PlusCircle className="mr-2 h-5 w-5" />
+        Add Company
+      </Button>
       {error && (
         <Alert variant="destructive" className="mb-8">
           <AlertTriangle className="h-4 w-4" />
@@ -318,7 +332,17 @@ const handleSubmit = async () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+     
+
+      <AddCompanyDialog
+        isOpen={isAddCompanyDialogOpen}
+        onClose={() => setIsAddCompanyDialogOpen(false)}
+        onSuccess={handleCompanyAdded}
+      />
     </div>
+
+
+
   );
 }
 

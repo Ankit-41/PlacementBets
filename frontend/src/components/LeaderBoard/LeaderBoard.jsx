@@ -5,26 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, TrendingUp, Target, ArrowUpRight, ArrowDownRight, Crown, Medal } from 'lucide-react';
+import { Trophy, TrendingUp, Target, ArrowUp, ArrowDown,ArrowUpRight, ArrowDownRight, Crown, Medal } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import axios from 'axios';
 
-// Mock data for the leaderboard
-const leaderboardData = [
-  { id: 1, name: 'Alice Johnson', avatar: '/avatar1.jpg', tokens: 15000, successfulBets: 42, totalBets: 50, streak: 7, change: 2 },
-  { id: 2, name: 'Bob Smith', avatar: '/avatar2.jpg', tokens: 12500, successfulBets: 38, totalBets: 48, streak: 5, change: -1 },
-  { id: 3, name: 'Charlie Brown', avatar: '/avatar3.jpg', tokens: 11000, successfulBets: 35, totalBets: 45, streak: 3, change: 1 },
-  { id: 4, name: 'Diana Prince', avatar: '/avatar4.jpg', tokens: 10500, successfulBets: 33, totalBets: 44, streak: 4, change: 0 },
-  { id: 5, name: 'Ethan Hunt', avatar: '/avatar5.jpg', tokens: 9800, successfulBets: 30, totalBets: 42, streak: 2, change: 3 },
-  { id: 6, name: 'Fiona Gallagher', avatar: '/avatar6.jpg', tokens: 9200, successfulBets: 28, totalBets: 40, streak: 1, change: -2 },
-  { id: 7, name: 'George Costanza', avatar: '/avatar7.jpg', tokens: 8500, successfulBets: 25, totalBets: 38, streak: 0, change: 0 },
-  { id: 8, name: 'Hermione Granger', avatar: '/avatar8.jpg', tokens: 8000, successfulBets: 23, totalBets: 36, streak: 2, change: 1 },
-  { id: 9, name: 'Ian Gallagher', avatar: '/avatar9.jpg', tokens: 7500, successfulBets: 20, totalBets: 34, streak: 1, change: -1 },
-  { id: 10, name: 'Jessica Day', avatar: '/avatar10.jpg', tokens: 7000, successfulBets: 18, totalBets: 32, streak: 0, change: 2 },
-];
-
-// Updated podiumOrder to map ranks correctly for different screen sizes
-// For small screens: [0, 1, 2] => Rank1, Rank2, Rank3
-// For large screens: [1, 0, 2] => Rank2, Rank1, Rank3
 const podiumOrder = [1, 0, 2];
 
 const TopThreeCard = ({ user, rank }) => {
@@ -78,6 +62,12 @@ const TopThreeCard = ({ user, rank }) => {
     }
   };
 
+//   const totalBets = user.wonBets + user.lostBets;
+//   const successRate = totalBets > 0 ? (user.wonBets / totalBets) * 100 : 0;
+const totalBets = user.totalBets;
+const successRate = totalBets > 0 ? (user.successfulBets / user.totalBets) * 100 : 0;
+ console.log('User Data:', user);
+ console.log(successRate);
   return (
     <motion.div
       className={`${getWidth()} ${getHeight()} mx-auto sm:mx-2 mb-4 sm:mb-0`}
@@ -114,11 +104,11 @@ const TopThreeCard = ({ user, rank }) => {
             <div className="text-xs text-center mb-1 text-gray-300">Success Rate</div>
             <div className="flex items-center justify-center">
               <Progress 
-                value={(user.successfulBets / user.totalBets) * 100} 
+                value={successRate} 
                 className={`${rank === 1 ? 'w-32' : 'w-24'} h-2 mr-2 bg-gray-700`}
               />
               <span className="text-xs font-medium text-gray-200">
-                {((user.successfulBets / user.totalBets) * 100).toFixed(1)}%
+                {successRate.toFixed(1)}%
               </span>
             </div>
           </div>
@@ -126,15 +116,6 @@ const TopThreeCard = ({ user, rank }) => {
       </Card>
     </motion.div>
   );
-};
-
-const ChangeIndicator = ({ change }) => {
-  if (change > 0) {
-    return <ArrowUpRight className="text-green-500" />;
-  } else if (change < 0) {
-    return <ArrowDownRight className="text-red-500" />;
-  }
-  return null;
 };
 
 const fireworks = () => {
@@ -183,9 +164,52 @@ const fireworks = () => {
 };
 
 export default function Leaderboard() {
+  
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [stats, setStats] = useState({
+    totalBets: 0,
+    totalTokens: 0,
+    avgSuccessRate: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [hoveredUser, setHoveredUser] = useState(null);
 
   useEffect(() => {
+    const fetchLeaderboardData = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        
+        // Fetch leaderboard data
+        const leaderboardResponse = await axios.get('http://localhost:5000/api/leaderboard', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        // Fetch statistics
+        const statsResponse = await axios.get('http://localhost:5000/api/leaderboard/stats', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (leaderboardResponse.data.status === 'success') {
+          setLeaderboardData(leaderboardResponse.data.data);
+        }
+
+        if (statsResponse.data.status === 'success') {
+          setStats(statsResponse.data.data);
+        }
+
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching leaderboard data:', err);
+        setError('Failed to load leaderboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboardData();
+   // Set up celebration interval after data is loaded
     const celebrationInterval = setInterval(() => {
       fireworks();
     }, 8000);
@@ -193,7 +217,38 @@ export default function Leaderboard() {
     return () => clearInterval(celebrationInterval);
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+        <AlertTriangle className="text-emerald-500 w-16 h-16 mb-4" />
+        <div className="text-emerald-500 text-xl font-semibold">{error}</div>
+      </div>
+    );
+  }
+
   const topThree = leaderboardData.slice(0, 3);
+
+  // Calculate average success rate
+  const totalUsers = leaderboardData.length;
+  const totalSuccessRate = leaderboardData.reduce((sum, user) => {
+    console.log('User avg Data:', user);
+    const totalBets = user.totalBets;
+    const userSuccessRate = totalBets > 0 ? (user.successfulBets / user.totalBets) * 100 : 0;
+    
+    // console.log("sum",sum)
+    return sum + userSuccessRate;
+  }, 0);
+
+
+  const averageSuccessRate = totalUsers > 0 ? (totalSuccessRate / totalUsers) : 0;
 
   return ( 
     <div className="bg-gray-900 p-4 container mx-auto px-4">
@@ -210,10 +265,17 @@ export default function Leaderboard() {
         <p className="text-lg text-gray-400">Celebrating Our Top Performers</p>
       </motion.div>
       
-      {/* Top 3 Winners - Updated flex container */}
+      {/* Top 3 Winners */}
       <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-4 mb-16">
         {topThree.map((user, index) => (
-          <TopThreeCard key={user.id} user={user} rank={index + 1} />
+          <TopThreeCard 
+            key={user.id} 
+            user={{
+              ...user,
+              avatar: `/api/placeholder/150/150?text=${user.name.split(' ').map(n => n[0]).join('')}`
+            }} 
+            rank={index + 1} 
+          />
         ))}
       </div>
 
@@ -226,7 +288,7 @@ export default function Leaderboard() {
         />
         <AnimatedStatsCard
           title="Average Success Rate"
-          value={`${(leaderboardData.reduce((sum, user) => sum + (user.successfulBets / user.totalBets), 0) / leaderboardData.length * 100).toFixed(1)}%`}
+          value={`${averageSuccessRate.toFixed(1)}%`}
           icon={<TrendingUp className="h-5 w-5 text-green-500" />}
         />
         <AnimatedStatsCard
@@ -239,72 +301,151 @@ export default function Leaderboard() {
       {/* Full Leaderboard */}
       <div className="mb-16">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-200">Complete Rankings</h2>
-        <LeaderboardTable data={leaderboardData} hoveredUser={hoveredUser} setHoveredUser={setHoveredUser} />
+        <LeaderboardTable 
+          data={leaderboardData.map(user => ({
+            ...user,
+            avatar: `/api/placeholder/150/150?text=${user.name.split(' ').map(n => n[0]).join('')}`
+          }))} 
+          hoveredUser={hoveredUser} 
+          setHoveredUser={setHoveredUser} 
+        />
       </div>
     </div>
   );
 }
 
-const LeaderboardTable = ({ data, hoveredUser, setHoveredUser }) => (
-  <div className="bg-gray-800 bg-opacity-80 rounded-lg shadow-lg overflow-hidden">
-    <Table className="min-w-full">
-      <TableHeader>
-        <TableRow className="bg-gray-700">
-          <TableHead className="w-[50px] font-bold text-gray-200">Rank</TableHead>
-          <TableHead className="font-bold text-gray-200">User</TableHead>
-          <TableHead className="font-bold text-gray-200">Tokens</TableHead>
-          <TableHead className="text-center font-bold text-gray-200">Success Rate</TableHead>
-          <TableHead className="text-center font-bold text-gray-200">Streak</TableHead>
-          <TableHead className="text-center font-bold text-gray-200">Change</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.map((user, index) => (
-          <motion.tr
-            key={user.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            onHoverStart={() => setHoveredUser(user.id)}
-            onHoverEnd={() => setHoveredUser(null)}
-            className="hover:bg-gray-700 cursor-pointer transition-colors"
-          >
-            <TableCell className="font-medium text-gray-200">{index + 1}</TableCell>
-            <TableCell>
-              <div className="flex items-center">
-                <Avatar className="w-8 h-8 mr-2">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="bg-green-500 text-gray-900">{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                </Avatar>
-                <span className="text-gray-200">{user.name}</span>
-              </div>
-            </TableCell>
-            <TableCell className="font-medium text-gray-200">{user.tokens.toLocaleString()}</TableCell>
-            <TableCell>
-              <div className="flex items-center justify-center">
-                <Progress 
-                  value={(user.successfulBets / user.totalBets) * 100} 
-                  className="w-24 h-2 bg-gray-700"
-                />
-                <span className="text-xs font-medium text-gray-200">
-                  {((user.successfulBets / user.totalBets) * 100).toFixed(1)}%
-                </span>
-              </div>
-            </TableCell>
-            <TableCell className="text-center">
-              <Badge variant={user.streak > 0 ? "default" : "secondary"} className="font-medium">
-                {user.streak} 🔥
-              </Badge>
-            </TableCell>
-            <TableCell className="text-center">
-              <ChangeIndicator change={user.change} />
-            </TableCell>
-          </motion.tr>
-        ))}
-      </TableBody>
-    </Table>
-  </div>
-);
+const LeaderboardTable = ({ data, hoveredUser, setHoveredUser }) => {
+  const [sortConfig, setSortConfig] = useState({ key: 'tokens', direction: 'descending' });
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = React.useMemo(() => {
+    const sortableData = [...data];
+    sortableData.sort((a, b) => {
+      let aValue, bValue;
+      switch (sortConfig.key) {
+        case 'tokens':
+          aValue = a.tokens;
+          bValue = b.tokens;
+          break;
+        case 'successRate':
+          const aTotalBets = a.totalBets;
+          const bTotalBets = b.totalBets;
+          aValue = aTotalBets > 0 ? (a.successfulBets / aTotalBets) * 100 : 0;
+          bValue = bTotalBets > 0 ? (b.successfulBets / bTotalBets) * 100 : 0;
+          break;
+        case 'streak':
+          aValue = a.streak;
+          bValue = b.streak;
+          break;
+        default:
+          return 0;
+      }
+      if (aValue < bValue) {
+        return sortConfig.direction === 'ascending' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+    return sortableData;
+  }, [data, sortConfig]);
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? 
+        <ArrowUp className="inline-block ml-1 h-4 w-4 text-emerald-500" /> : 
+        <ArrowDown className="inline-block ml-1 h-4 w-4 text-red-500" />;
+    }
+    return <ArrowUp className="inline-block ml-1 h-4 w-4 text-amber-300 opacity-50" />;
+  };
+
+
+  return (
+    <div className="bg-gray-800 bg-opacity-80 rounded-lg shadow-lg overflow-hidden">
+      <Table className="min-w-full">
+        <TableHeader>
+          <TableRow className="bg-gray-700">
+            <TableHead className="w-[50px] font-bold text-gray-200">Rank</TableHead>
+            <TableHead className="font-bold text-gray-200">User</TableHead>
+            <TableHead
+              className="font-bold text-gray-200 cursor-pointer"
+              onClick={() => handleSort('tokens')}
+            >
+              Tokens {getSortIcon('tokens')}
+            </TableHead>
+            <TableHead
+              className="text-center font-bold text-gray-200 cursor-pointer"
+              onClick={() => handleSort('successRate')}
+            >
+              Success Rate {getSortIcon('successRate')}
+            </TableHead>
+            <TableHead
+              className="text-center font-bold text-gray-200 cursor-pointer"
+              onClick={() => handleSort('streak')}
+            >
+              Streak {getSortIcon('streak')}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedData.map((user, index) => {
+            // For debugging
+            // console.log('User Data:', user);
+            const totalBets = user.totalBets;
+            const successRate = totalBets > 0 ? (user.successfulBets / user.totalBets) * 100 : 0;
+            return (
+              <motion.tr
+                key={user.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                onHoverStart={() => setHoveredUser(user.id)}
+                onHoverEnd={() => setHoveredUser(null)}
+                className="hover:bg-gray-700 cursor-pointer transition-colors"
+              >
+                <TableCell className="font-medium text-gray-200">{index + 1}</TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <Avatar className="w-8 h-8 mr-2">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback className="bg-green-500 text-gray-900">{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-gray-200">{user.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium text-gray-200">{user.tokens.toLocaleString()}</TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center">
+                    <Progress 
+                      value={successRate} 
+                      className="w-24 h-2 bg-gray-700"
+                    />
+                    <span className="text-xs font-medium text-gray-200">
+                      {successRate.toFixed(1)}%
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge variant={user.streak > 0 ? "default" : "secondary"} className="font-medium">
+                    {user.streak} 🔥
+                  </Badge>
+                </TableCell>
+              </motion.tr>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
 
 const AnimatedStatsCard = ({ title, value, icon }) => (
   <motion.div

@@ -1,7 +1,7 @@
 // models/Bet.js
 const mongoose = require('mongoose');
 
-const betSchema = new mongoose.Schema({
+const ExpiredBetSchema = new mongoose.Schema({
   bettorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -53,7 +53,7 @@ const betSchema = new mongoose.Schema({
 });
 
 // Add index for better query performance
-betSchema.index({ bettorId: 1, status: 1 });
-betSchema.index({ companyId: 1, status: 1 });
+ExpiredBetSchema.index({ bettorId: 1, status: 1 });
+ExpiredBetSchema.index({ companyId: 1, status: 1 });
 
-module.exports = mongoose.model('Bet', betSchema);
+module.exports = mongoose.model('ExpiredBet', ExpiredBetSchema);

@@ -6,7 +6,7 @@ require('dotenv').config();
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const companyRoutes = require('./routes/companyRoutes');
-const betRoutes = require('./routes/betRoutes');
+const betRoutes = require('./routes/betRoutes.js');
 const leaderboardRoutes = require('./routes/LeaderboardRoutes');
 const adminPanelRoutes = require('./routes/adminPanelRoutes');
 

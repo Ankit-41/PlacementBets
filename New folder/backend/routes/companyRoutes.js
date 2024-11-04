@@ -22,6 +22,33 @@ router.get('/active', protect, async (req, res) => {
     });
   }
 });
+// routes/companyRoutes.js
+// Add this new route for creating companies
+router.post('/create', protect, async (req, res) => {
+  try {
+    // Get the latest companyId
+    const latestCompany = await Company.findOne().sort({ companyId: -1 });
+    const nextCompanyId = latestCompany ? latestCompany.companyId + 1 : 1;
+
+    // Create new company with auto-incremented companyId
+    const newCompany = await Company.create({
+      ...req.body,
+      companyId: nextCompanyId,
+      status: 'active'  // Default status
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: newCompany
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Error creating company',
+      error: error.message
+    });
+  }
+});
 
 module.exports = router;
 

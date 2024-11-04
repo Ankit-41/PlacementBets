@@ -16,7 +16,8 @@ import {
   Flame,
   History,
   Trophy,
-  Target
+  Target,
+  Shield
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
@@ -34,12 +35,15 @@ export default function Header() {
     { name: 'Expired Bets', path: '/expiredbets', icon: <History className="w-4 h-4 mr-1" /> },
     { name: 'Leaderboard', path: '/leaderboard', icon: <Trophy className="w-4 h-4 mr-1" /> },
     { name: 'My Bets', path: '/mybets', icon: <Target className="w-4 h-4 mr-1" /> },
+    { name: 'Admin Panel', path: '/adminPanel', icon: <Shield className="w-4 h-4 mr-1" /> },
+  
   ]
 
+
   const offers = [
-    "🔥 New User Bonus: 100% Match up to $500!",
-    "🏆 Refer a Friend: Get $50 Free Bet!",
-    "⚽ Champions League Final: Double Your Winnings!",
+   "🔥 Kickstart Your Betting Journey with Premium Odds!",
+   "🎓 Placement Season Surprise: Bet Big, Win Bigger!",
+    "🔓 Unlock Elite Betting Opportunities as a New Player!"
   ]
 
   useEffect(() => {

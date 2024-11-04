@@ -10,7 +10,31 @@ import ExpiredBets from './components/ExpiredBets/ExpiredBets';
 import MyBets from './components/MyBets/MyBets';
 import LandingPage from './components/Aaiye/LandingPage';
 import FooterDescription from './components/homepage/FooterDescription';
+import AdminPanel from './components/adminPanel/adminPanel';
 import { useAuth } from './contexts/AuthContext';
+import Unauthorized from './components/adminPanel/unauthorized';
+
+const AdminProtectedLayout = ({ children }) => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user.role !== 'admin') {
+    return <Unauthorized />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 flex flex-col">
+      <Header />
+      <main className="flex-1">
+        {children}
+      </main>
+      <FooterDescription />
+    </div>
+  );
+};
 
 const ProtectedLayout = ({ children }) => {
   const { user } = useAuth();
@@ -59,6 +83,11 @@ function App() {
             <ProtectedLayout>
               <ExpiredBets />
             </ProtectedLayout>
+          } />
+          <Route path="/adminPanel" element={
+             <AdminProtectedLayout>
+             <AdminPanel />
+           </AdminProtectedLayout>
           } />
           
           <Route path="/mybets" element={

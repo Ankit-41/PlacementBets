@@ -5,17 +5,7 @@ const Company = require('../models/Company');
 const Bet = require('../models/Bet');
 const User = require('../models/User');
 const { protect } = require('../controllers/authController');
-
-// Debug middleware
-router.use((req, res, next) => {
-  console.log('Admin Route accessed:', {
-    method: req.method,
-    url: req.url,
-    params: req.params,
-    body: req.body
-  });
-  next();
-});
+const { transferAndUpdateBets } = require('../services/betService');
 
 // Helper function to process individual bet
 async function processIndividualBet(bet, company) {
@@ -24,6 +14,7 @@ async function processIndividualBet(bet, company) {
     if (!individual) return;
 
     const winningAmount = Math.floor(bet.amount * bet.stake);
+    let originalStatus = bet.status;
 
     if (individual.result === 'won') {
       if (bet.betType === 'for') {
@@ -47,7 +38,12 @@ async function processIndividualBet(bet, company) {
       }
     }
 
-    await bet.save();
+    // Only transfer to ExpiredBets if status changed from active
+    if (originalStatus === 'active' && bet.status !== 'active') {
+      await transferAndUpdateBets(bet, individual.result);
+    } else {
+      await bet.save();
+    }
   } catch (error) {
     console.error('Error processing individual bet:', error);
     throw error;
@@ -114,7 +110,6 @@ router.put('/:companyId/individuals/:individualId/result', protect, async (req, 
       });
     }
 
-    // Find individual by ID (considering it might be a number)
     const individual = company.individuals.find(ind => ind.id.toString() === individualId.toString());
     if (!individual) {
       return res.status(404).json({

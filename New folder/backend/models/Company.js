@@ -67,6 +67,10 @@ const companySchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  logo:{
+    type:String,
+    default:"https://cdn2.hubspot.net/hubfs/53/image8-2.jpg"
+  },
   status: {
     type: String,
     enum: ['active', 'expired','pending'],
