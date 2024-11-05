@@ -159,7 +159,7 @@ exports.logout = (req, res) => {
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-
+require('dotenv').config();
 // Store OTPs temporarily (in production, use Redis or similar)
 const otpStore = new Map();
 
