@@ -69,7 +69,7 @@ export default function LandingPage() {
             // Show loading state
             setIsLoading(true);
 
-            const response = await axios.post('http://localhost:5000/api/auth/send-otp',
+            const response = await axios.post('https://jobjinxbackend.vercel.app/api/auth/send-otp',
                 { email },
                 {
                     headers: {
@@ -104,7 +104,7 @@ export default function LandingPage() {
 
         try {
             setIsLoading(true);
-            const response = await axios.post('http://localhost:5000/api/auth/verify-otp', {
+            const response = await axios.post('https://jobjinxbackend.vercel.app/api/auth/verify-otp', {
                 email,
                 otp
             });

@@ -82,7 +82,7 @@ export function BettingMenuDialog({ bet, onClose }) {
   const recalculateStakes = async (companyId) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/bets/recalculate-stakes/${companyId}`,
+        `https://jobjinxbackend.vercel.app/api/bets/recalculate-stakes/${companyId}`,
         {},
         {
           headers: {
@@ -129,7 +129,7 @@ export function BettingMenuDialog({ bet, onClose }) {
 
       // Place bets
       const betResponse = await axios.post(
-        'http://localhost:5000/api/bets/place-bets',
+        'https://jobjinxbackend.vercel.app/api/bets/place-bets',
         {
           companyId: bet.companyId,
           bets

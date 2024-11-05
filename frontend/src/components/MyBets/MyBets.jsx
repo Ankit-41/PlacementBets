@@ -43,7 +43,7 @@ export default function MyBets() {
     const fetchMyBets = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://localhost:5000/api/bets/my-bets', {
+        const response = await axios.get('https://jobjinxbackend.vercel.app/api/bets/my-bets', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

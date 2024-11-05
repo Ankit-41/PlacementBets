@@ -182,12 +182,12 @@ export default function Leaderboard() {
         const token = localStorage.getItem('token');
         
         // Fetch leaderboard data
-        const leaderboardResponse = await axios.get('http://localhost:5000/api/leaderboard', {
+        const leaderboardResponse = await axios.get('https://jobjinxbackend.vercel.app/api/leaderboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         // Fetch statistics
-        const statsResponse = await axios.get('http://localhost:5000/api/leaderboard/stats', {
+        const statsResponse = await axios.get('https://jobjinxbackend.vercel.app/api/leaderboard/stats', {
           headers: { Authorization: `Bearer ${token}` }
         });
 

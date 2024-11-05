@@ -31,7 +31,7 @@ function ImprovedAdminPanel() {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/companies/active', {
+      const response = await axios.get('https://jobjinxbackend.vercel.app/api/companies/active', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -101,7 +101,7 @@ function ImprovedAdminPanel() {
         });
 
         const companyStatusRequest = axios.put(
-          `http://localhost:5000/api/admin/companies/${selectedCompany._id}/status`,
+          `https://jobjinxbackend.vercel.app/api/admin/companies/${selectedCompany._id}/status`,
           { status: updatedCompanyStatus },
           { headers }
         );
@@ -119,7 +119,7 @@ function ImprovedAdminPanel() {
           });
 
           const individualResultRequest = axios.put(
-            `http://localhost:5000/api/admin/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
+            `https://jobjinxbackend.vercel.app/api/admin/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
             { result: newResult },
             { headers }
           );

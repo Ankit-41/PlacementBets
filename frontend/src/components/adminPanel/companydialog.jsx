@@ -130,7 +130,7 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
 
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/api/companies/create',
+        'https://jobjinxbackend.vercel.app/api/companies/create',
         finalData,
         {
           headers: {

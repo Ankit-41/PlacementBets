@@ -84,7 +84,7 @@ export default function ExpiredBets() {
     const fetchExpiredBets = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://localhost:5000/api/companies/expired', {
+        const response = await axios.get('https://jobjinxbackend.vercel.app/api/companies/expired', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

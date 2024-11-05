@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://jobjinxbackend.vercel.app/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }) => {
   // Method to refresh user data from server
   const refreshUserData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/me', {
+      const response = await axios.get('https://jobjinxbackend.vercel.app/api/auth/me', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
