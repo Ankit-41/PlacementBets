@@ -106,10 +106,11 @@ export default function CompanyCarousel() {
     setSelectedCompany(company)
   }
 
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
@@ -177,7 +178,7 @@ export default function CompanyCarousel() {
                     </div>
                   </CardContent>
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                  <div className="absolute top-0 right-0 h-32 w-32 opacity-80">
+                  <div className="absolute top-0 right-0 h-32 w-32 opacity-70">
                     <img 
                       src={company.logo} alt="Company Logo"
                       className="w-full h-full object-contain"

@@ -5,11 +5,13 @@ const Company = require('../models/Company');
 const { protect } = require('../controllers/authController');
 
 // Get all active companies
-router.get('/active', protect, async (req, res) => {
+router.get('/:status', protect, async (req, res) => {
+  const { status } = req.params;
+
   try {
-    const companies = await Company.find({ status: 'active' })
+    const companies = await Company.find({ status })
       .sort({ createdAt: -1 });
-    
+
     res.status(200).json({
       status: 'success',
       data: companies
@@ -17,11 +19,12 @@ router.get('/active', protect, async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: 'error',
-      message: 'Error fetching active companies',
+      message: `Error fetching ${status} companies`,
       error: error.message
     });
   }
 });
+
 // routes/companyRoutes.js
 // Add this new route for creating companies
 router.post('/create', protect, async (req, res) => {

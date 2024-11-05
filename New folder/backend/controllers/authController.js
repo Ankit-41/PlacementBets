@@ -153,3 +153,139 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({ status: 'success' });
 };
+
+
+// controllers/authController.js
+
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+// Store OTPs temporarily (in production, use Redis or similar)
+const otpStore = new Map();
+
+// Configure nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+// Generate OTP
+const generateOTP = () => {
+  return crypto.randomInt(100000, 999999).toString();
+};
+
+// Send OTP email
+exports.sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate IITR email
+    if (!email.toLowerCase().endsWith('iitr.ac.in')) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please use an IITR email address'
+      });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+    
+    // Store OTP with timestamp (expire after 10 minutes)
+    otpStore.set(email, {
+      otp,
+      timestamp: Date.now(),
+      attempts: 0
+    });
+
+    // Send email
+    const mailOptions = {
+      from: process.env.EMAIL_USERNAME,
+      to: email,
+      subject: 'JobJinx Email Verification',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #10B981;">JobJinx Email Verification</h2>
+          <p>Your verification code is:</p>
+          <h1 style="color: #10B981; font-size: 32px;">${otp}</h1>
+          <p>This code will expire in 10 minutes.</p>
+          <p>If you didn't request this code, please ignore this email.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'OTP sent successfully'
+    });
+
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to send OTP'
+    });
+  }
+};
+
+// Verify OTP
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const storedData = otpStore.get(email);
+
+    if (!storedData) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No OTP found for this email. Please request a new one.'
+      });
+    }
+
+    // Check if OTP is expired (10 minutes)
+    if (Date.now() - storedData.timestamp > 10 * 60 * 1000) {
+      otpStore.delete(email);
+      return res.status(400).json({
+        status: 'error',
+        message: 'OTP has expired. Please request a new one.'
+      });
+    }
+
+    // Increment attempts
+    storedData.attempts += 1;
+
+    // Check maximum attempts (3)
+    if (storedData.attempts > 3) {
+      otpStore.delete(email);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Too many attempts. Please request a new OTP.'
+      });
+    }
+
+    // Verify OTP
+    if (storedData.otp !== otp) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid OTP'
+      });
+    }
+
+    // OTP verified successfully
+    otpStore.delete(email);
+    res.status(200).json({
+      status: 'success',
+      message: 'Email verified successfully'
+    });
+
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to verify OTP'
+    });
+  }
+};

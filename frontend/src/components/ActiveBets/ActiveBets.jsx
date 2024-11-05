@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Users, Clock, TrendingUp, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Users, Clock, TrendingUp, ChevronRight, AlertTriangle, Briefcase, DollarSign } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BettingMenuDialog } from './BettingMenuDialog'
 import axios from 'axios'
@@ -26,12 +26,13 @@ export default function ActiveBets() {
             'Authorization': `Bearer ${token}`
           }
         })
-        
+
         if (response.data.status === 'success' && Array.isArray(response.data.data)) {
           const transformedBets = response.data.data.map(bet => ({
             id: bet._id,
             companyId: bet._id,
             company: bet.company,
+            profile: bet.profile,
             expiresIn: bet.expiresIn,
             totalTokenBet: bet.totalTokenBet || 0,
             users: bet.individuals.map(individual => ({
@@ -83,7 +84,7 @@ export default function ActiveBets() {
 
   return (
     <div className="min-h-screen space-y-6 p-4 bg-gradient-to-b from-gray-900 to-gray-800">
-      <motion.div 
+      <motion.div
         className="text-center mb-8"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -96,22 +97,22 @@ export default function ActiveBets() {
       </motion.div>
 
       <AnimatePresence>
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pr-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {activeBets.map((bet, index) => (
-            <Dialog 
-              key={bet.id} 
+            <Dialog
+              key={bet.id}
               onOpenChange={(open) => {
                 if (open) handleBetDialogOpen(bet)
                 else setSelectedBet(null)
               }}
             >
               <DialogTrigger asChild>
-                <MotionCard 
+                <MotionCard
                   className="cursor-pointer bg-gray-800 bg-opacity-60 backdrop-blur-md hover:shadow-2xl transition-all duration-300 rounded-2xl border border-gray-700 hover:border-emerald-500 overflow-hidden"
                   whileHover={{ scale: 1.03 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -127,14 +128,21 @@ export default function ActiveBets() {
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-emerald-500" />
-                        <span>Expires in: {bet.expiresIn}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4 text-emerald-500" />
-                        <span>Tokens bet: {bet.totalTokenBet}</span>
-                      </div>
+                      
+                        <div className="flex items-center gap-1">
+                          <Briefcase className="h-4 w-4 text-emerald-500" />
+                          <span>Profile: {bet.profile}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4 text-emerald-500" />
+                          <span>Expires in: {bet.expiresIn}</span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <DollarSign className="h-4 w-4 text-emerald-500" />
+                          <span>Tokens bet: {bet.totalTokenBet}</span>
+                        </div>
+                   
                     </div>
                   </CardHeader>
                   <CardContent className="pt-4 pb-2 px-4">
@@ -161,12 +169,12 @@ export default function ActiveBets() {
                 </MotionCard>
               </DialogTrigger>
               {selectedBet && selectedBet.id === bet.id && (
-                <BettingMenuDialog 
+                <BettingMenuDialog
                   bet={{
                     ...selectedBet,
                     companyId: selectedBet.id
-                  }} 
-                  onClose={() => setSelectedBet(null)} 
+                  }}
+                  onClose={() => setSelectedBet(null)}
                 />
               )}
             </Dialog>

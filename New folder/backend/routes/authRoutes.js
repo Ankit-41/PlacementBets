@@ -4,6 +4,14 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
+
+
+// Send OTP email for verification
+router.post('/send-otp', authController.sendOTP);
+
+// Verify OTP
+router.post('/verify-otp', authController.verifyOTP);
+
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);

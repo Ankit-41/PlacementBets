@@ -156,11 +156,13 @@ function ImprovedAdminPanel() {
     }
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    )
+  }
   const handleCompanyAdded = () => {
     fetchCompanies();  // Refresh the companies list
   };
