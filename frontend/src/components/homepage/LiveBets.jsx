@@ -39,11 +39,11 @@ export default function LiveBets() {
             'Authorization': `Bearer ${token}`
           }
         })
-        
         if (response.data.status === 'success' && Array.isArray(response.data.data)) {
           const transformedEvents = response.data.data.map(event => ({
             id: event._id,
             company: event.company,
+            profile: event.profile,
             category: event.profile,
             timeLeft: event.expiresIn,
             totalTokenBet: event.totalTokenBet,
@@ -86,9 +86,9 @@ export default function LiveBets() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-        <Loader className="w-12 h-12 text-green-400 animate-spin" />
-      </div>
+      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
+    </div>
     )
   }
 
@@ -102,7 +102,7 @@ export default function LiveBets() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 md:p-6 rounded-lg shadow-2xl">
-      <h2 className="text-3xl font-bold mb-6 flex items-center text-green-400">
+      <h2 className="text-3xl font-bold mb-6 flex items-center text-emerald-400">
         <Zap className="mr-2 h-8 w-8" /> Live Events
       </h2>
       
@@ -121,7 +121,7 @@ export default function LiveBets() {
         <Button
           variant="outline"
           onClick={() => setShowAllBets(true)}
-          className="bg-green-500 text-gray-900 hover:bg-green-600 font-semibold px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105"
+          className="bg-emerald-500 text-gray-900 hover:bg-emerald-600 font-semibold px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105"
         >
           View All Bets
         </Button>
@@ -149,9 +149,9 @@ export default function LiveBets() {
                   >
                     <CardContent className="p-0">
                       <div className="flex justify-between items-start mb-4">
-                        <h4 className="text-xl font-bold text-green-400">{event.company}</h4>
+                        <h4 className="text-xl font-bold text-emerald-400">{event.company}</h4>
                         <div className="flex items-center space-x-2">
-                          <span className="text-xs bg-green-500 text-gray-900 px-2 py-1 rounded-full font-semibold">
+                          <span className="text-xs bg-emerald-500 text-gray-900 px-2 py-1 rounded-full font-semibold">
                             {event.category}
                           </span>
                           <motion.div
@@ -164,7 +164,7 @@ export default function LiveBets() {
                       {event.users.slice(0, 3).map((user, userIndex) => (
                         <div key={userIndex} className="flex justify-between items-center text-gray-300 mb-2">
                           <span>{user.name}</span>
-                          <span className="font-semibold text-green-400">{user.odds}</span>
+                          <span className="font-semibold text-emerald-400">{user.odds}</span>
                         </div>
                       ))}
                       <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
@@ -185,6 +185,7 @@ export default function LiveBets() {
                     bet={{
                       company: selectedEvent.company,
                       companyId: selectedEvent.id,
+                      profile: selectedEvent.profile,
                       users: selectedEvent.users.map(user => ({
                         id: user.id,
                         name: user.name,

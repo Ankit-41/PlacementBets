@@ -7,9 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, TrendingUp, Users, AlertTriangle } from 'lucide-react';
+import { Loader2, TrendingUp, Users, AlertTriangle, Check, PlusCircle, RefreshCw } from 'lucide-react';
 import { AddCompanyDialog } from './companydialog';
-import { PlusCircle } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { motion, AnimatePresence } from 'framer-motion';
+
 function ImprovedAdminPanel() {
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -21,8 +23,8 @@ function ImprovedAdminPanel() {
   const [submitError, setSubmitError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // Inside your AdminPanel component, add this state:
   const [isAddCompanyDialogOpen, setIsAddCompanyDialogOpen] = useState(false);
+
   useEffect(() => {
     fetchCompanies();
   }, []);
@@ -43,10 +45,10 @@ function ImprovedAdminPanel() {
         setError('Received invalid data format for companies');
         setCompanies([]);
       }
-      setLoading(false);
     } catch (err) {
       setError('Failed to fetch companies: ' + (err.response?.data?.message || err.message));
       setCompanies([]);
+    } finally {
       setLoading(false);
     }
   };
@@ -75,8 +77,6 @@ function ImprovedAdminPanel() {
     }));
   };
 
-  // In your AdminPanel.jsx
-
   const handleSubmit = async () => {
     if (!selectedCompany) return;
 
@@ -93,13 +93,7 @@ function ImprovedAdminPanel() {
     try {
       const requests = [];
 
-      // Update company status if changed
       if (updatedCompanyStatus !== selectedCompany.status) {
-        console.log('Updating company status:', {
-          companyId: selectedCompany._id,
-          status: updatedCompanyStatus
-        });
-
         const companyStatusRequest = axios.put(
           `https://jobjinxbackend.vercel.app/api/admin/companies/${selectedCompany._id}/status`,
           { status: updatedCompanyStatus },
@@ -108,16 +102,9 @@ function ImprovedAdminPanel() {
         requests.push(companyStatusRequest);
       }
 
-      // Update individual results if changed
       for (const individual of selectedCompany.individuals) {
         const newResult = updatedIndividualResults[individual.id];
         if (newResult && newResult !== individual.result) {
-          console.log('Updating individual result:', {
-            companyId: selectedCompany._id,
-            individualId: individual.id,
-            result: newResult
-          });
-
           const individualResultRequest = axios.put(
             `https://jobjinxbackend.vercel.app/api/admin/companies/${selectedCompany._id}/individuals/${individual.id}/result`,
             { result: newResult },
@@ -133,20 +120,18 @@ function ImprovedAdminPanel() {
         return;
       }
 
-      // Execute all requests
-      const results = await Promise.all(requests);
-      console.log('Update results:', results);
+      await Promise.all(requests);
 
       setSuccessMessage('Changes submitted successfully and bets have been processed.');
-      await fetchCompanies(); // Refresh the companies list
+      await fetchCompanies();
       setIsDialogOpen(false);
     } catch (err) {
-      console.error('Submit error:', err);
       setSubmitError('Failed to submit changes: ' + (err.response?.data?.message || err.message));
     } finally {
       setSubmitLoading(false);
     }
   };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'bg-green-500 text-white';
@@ -156,171 +141,217 @@ function ImprovedAdminPanel() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    )
-  }
   const handleCompanyAdded = () => {
-    fetchCompanies();  // Refresh the companies list
+    fetchCompanies();
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">Betting Admin Panel</h1>
-
-
-      <Button
-        onClick={() => setIsAddCompanyDialogOpen(true)}
-        className="bg-green-600 hover:bg-green-700"
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-8">
+      <motion.h1 
+        className="text-5xl font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-blue-500"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <PlusCircle className="mr-2 h-5 w-5" />
-        Add Company
-      </Button>
-      {error && (
-        <Alert variant="destructive" className="mb-8">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      <Card className="bg-gray-800 border-gray-700 text-white">
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center">
+        Betting Admin Panel
+      </motion.h1>
+
+      <div className="flex justify-between items-center mb-8">
+        <Button
+          onClick={() => setIsAddCompanyDialogOpen(true)}
+          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+        >
+          <PlusCircle className="mr-2 h-5 w-5" />
+          Add Company
+        </Button>
+        <Button
+          onClick={fetchCompanies}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+        >
+          <RefreshCw className="mr-2 h-5 w-5" />
+          Refresh
+        </Button>
+      </div>
+
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Alert variant="destructive" className="mb-8 bg-red-900/50 border-red-600">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Card className="bg-gray-800/50 border-gray-700 text-white backdrop-blur-sm shadow-xl rounded-xl overflow-hidden">
+        <CardHeader className="bg-gray-800/80">
+          <CardTitle className="text-2xl flex items-center text-emerald-400">
             <TrendingUp className="mr-2" /> Active Bets
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {companies.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-gray-300">Company</TableHead>
-                  <TableHead className="text-gray-300">Profile</TableHead>
-                  <TableHead className="text-gray-300">Expires In</TableHead>
-                  <TableHead className="text-gray-300">Total Token Bet</TableHead>
-                  <TableHead className="text-gray-300">Status</TableHead>
-                  <TableHead className="text-gray-300">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {companies.map((company) => (
-                  <TableRow key={company._id} className="hover:bg-gray-700">
-                    <TableCell className="font-medium">{company.company}</TableCell>
-                    <TableCell>{company.profile}</TableCell>
-                    <TableCell>{company.expiresIn}</TableCell>
-                    <TableCell>{company.totalTokenBet}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(company.status)}>
-                        {company.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() => handleCompanyClick(company)}
-                        variant="outline"
-                        className=" bg-gray-800 hover:bg-green-600 transition-colors"
-                      >
-                        Manage
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p className="text-center text-gray-400">No active bets found.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-gray-800 text-white max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center">
-              <Users className="mr-2" /> {selectedCompany?.company} - Manage Bets
-            </DialogTitle>
-          </DialogHeader>
-          {submitError && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Submission Error</AlertTitle>
-              <AlertDescription>{submitError}</AlertDescription>
-            </Alert>
-          )}
-          {successMessage && (
-            <Alert variant="success" className="mb-4 bg-green-600 text-white">
-              <AlertTitle>Success</AlertTitle>
-              <AlertDescription>{successMessage}</AlertDescription>
-            </Alert>
-          )}
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Company Status</h2>
-            <Select value={updatedCompanyStatus} onValueChange={handleCompanyStatusChange}>
-              <SelectTrigger className="w-[200px] bg-gray-700">
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-700">
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="expired">Expired</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Individual Bets</h2>
-            {selectedCompany?.individuals && selectedCompany.individuals.length > 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+            </div>
+          ) : companies.length > 0 ? (
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-gray-300">Name</TableHead>
-                    <TableHead className="text-gray-300">Enrollment</TableHead>
-                    <TableHead className="text-gray-300">For Stake</TableHead>
-                    <TableHead className="text-gray-300">Against Stake</TableHead>
-                    <TableHead className="text-gray-300">For Tokens</TableHead>
-                    <TableHead className="text-gray-300">Against Tokens</TableHead>
-                    <TableHead className="text-gray-300">Result</TableHead>
+                  <TableRow className="bg-gray-800/50">
+                    <TableHead className="text-emerald-400">Company</TableHead>
+                    <TableHead className="text-emerald-400">Profile</TableHead>
+                    <TableHead className="text-emerald-400">Expires In</TableHead>
+                    <TableHead className="text-emerald-400">Total Token Bet</TableHead>
+                    <TableHead className="text-emerald-400">Status</TableHead>
+                    <TableHead className="text-emerald-400">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {selectedCompany.individuals.map((individual) => (
-                    <TableRow key={individual.id} className="hover:bg-gray-700">
-                      <TableCell>{individual.name}</TableCell>
-                      <TableCell>{individual.enrollmentNumber}</TableCell>
-                      <TableCell>{individual.forStake}</TableCell>
-                      <TableCell>{individual.againstStake}</TableCell>
-                      <TableCell>{individual.forTokens}</TableCell>
-                      <TableCell>{individual.againstTokens}</TableCell>
+                  {companies.map((company) => (
+                    <TableRow key={company._id} className="hover:bg-gray-700/50 transition-colors">
+                      <TableCell className="font-medium">{company.company}</TableCell>
+                      <TableCell>{company.profile}</TableCell>
+                      <TableCell>{company.expiresIn}</TableCell>
+                      <TableCell>{company.totalTokenBet}</TableCell>
                       <TableCell>
-                        <Select
-                          value={updatedIndividualResults[individual.id]}
-                          onValueChange={(value) => handleIndividualResultChange(individual.id, value)}
+                        <Badge className={`${getStatusColor(company.status)} px-2 py-1 rounded-full text-xs font-semibold`}>
+                          {company.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => handleCompanyClick(company)}
+                          variant="outline"
+                          className=" text-white bg-gradient-to-r from-emerald-500 to-blue-500 hover:bg-blue-600 transition-colors"
                         >
-                          <SelectTrigger className="w-[120px] bg-gray-700">
-                            <SelectValue placeholder="Result" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-gray-700">
-                            <SelectItem value="awaited">Awaited</SelectItem>
-                            <SelectItem value="won">Won</SelectItem>
-                            <SelectItem value="lost">Lost</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          Manage
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            ) : (
-              <p className="text-center text-gray-400">No individual bets found for this company.</p>
-            )}
-          </div>
-          <DialogFooter>
+            </div>
+          ) : (
+            <p className="text-center text-gray-400 py-8">No active bets found.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="bg-gray-900 text-gray-100 max-w-4xl max-h-[90vh] overflow-hidden p-0 rounded-xl">
+          <DialogHeader className="p-6 bg-gray-800 sticky top-0 z-10">
+            <DialogTitle className="text-2xl flex items-center text-emerald-400">
+              <Users className="mr-2 h-6 w-6" /> {selectedCompany?.company} - Manage Bets
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[calc(90vh-10rem)] p-6">
+            <AnimatePresence>
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Alert variant="destructive" className="mb-4 bg-red-900/50 border-red-600">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Submission Error</AlertTitle>
+                    <AlertDescription>{submitError}</AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+              {successMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Alert variant="success" className="mb-4 bg-green-900/50 border-green-600 text-green-100">
+                    <Check className="h-4 w-4" />
+                    <AlertTitle>Success</AlertTitle>
+                    <AlertDescription>{successMessage}</AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-emerald-400">Company Status</h2>
+              <Select value={updatedCompanyStatus} onValueChange={handleCompanyStatusChange}>
+                <SelectTrigger className="w-full sm:w-[200px] bg-gray-800 border-gray-700">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent className="bg-emerald-600 border-emerald-400">
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="expired">Expired</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-emerald-400">Individual Bets</h2>
+              {selectedCompany?.individuals && selectedCompany.individuals.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-800/50">
+                        <TableHead className="text-emerald-400">Name</TableHead>
+                        <TableHead className="text-emerald-400">Enrollment</TableHead>
+                        <TableHead className="text-emerald-400">For Stake</TableHead>
+                        <TableHead className="text-emerald-400">Against Stake</TableHead>
+                        <TableHead className="text-emerald-400">For Tokens</TableHead>
+                        <TableHead className="text-emerald-400">Against Tokens</TableHead>
+                        <TableHead className="text-emerald-400">Result</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedCompany.individuals.map((individual) => (
+                        <TableRow key={individual.id} className="hover:bg-gray-800/50 transition-colors">
+                          <TableCell  className="font-medium">{individual.name}</TableCell>
+                          <TableCell>{individual.enrollmentNumber}</TableCell>
+                          <TableCell>{individual.forStake}</TableCell>
+                          <TableCell>{individual.againstStake}</TableCell>
+                          <TableCell>{individual.forTokens}</TableCell>
+                          <TableCell>{individual.againstTokens}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={updatedIndividualResults[individual.id]}
+                              onValueChange={(value) => handleIndividualResultChange(individual.id, value)}
+                            >
+                              <SelectTrigger className="w-full sm:w-[120px] bg-gray-800 border-gray-700">
+                                <SelectValue placeholder="Result" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-emerald-600 border-emerald-400">
+                                <SelectItem value="awaited">Awaited</SelectItem>
+                                <SelectItem value="won">Won</SelectItem>
+                                <SelectItem value="lost">Lost</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <p className="text-center text-gray-400">No individual bets found for this company.</p>
+              )}
+            </div>
+          </ScrollArea>
+          <DialogFooter className="p-6 bg-gray-800 sticky bottom-0 z-10">
             <Button
               onClick={handleSubmit}
               disabled={submitLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white transition-all duration-300 transform hover:scale-105"
             >
               {submitLoading ? (
                 <>
@@ -334,7 +365,6 @@ function ImprovedAdminPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-     
 
       <AddCompanyDialog
         isOpen={isAddCompanyDialogOpen}
@@ -342,9 +372,6 @@ function ImprovedAdminPanel() {
         onSuccess={handleCompanyAdded}
       />
     </div>
-
-
-
   );
 }
 

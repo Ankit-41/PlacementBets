@@ -166,7 +166,7 @@ export function BettingMenuDialog({ bet, onClose }) {
   };
 
   return (
-    <DialogContent className="max-w-4xl bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 border border-gray-700 rounded-xl shadow-2xl">
+    <DialogContent className="max-w-4xl bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 border border-gray-700 rounded-xl shadow-2xl p-8">
     <DialogHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 border-b border-gray-700 pb-4">
       <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
          {bet.company} - {bet.profile}
@@ -192,7 +192,7 @@ export function BettingMenuDialog({ bet, onClose }) {
         )}
       </AnimatePresence>
 
-     <ScrollArea className="h-[60vh] mt-4 rounded-md border border-gray-700 bg-gray-800/50 backdrop-blur-sm">
+     <ScrollArea className="h-auto mt-4 rounded-md border border-gray-700 bg-gray-800/50 backdrop-blur-sm">
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-800 border-b border-gray-700">

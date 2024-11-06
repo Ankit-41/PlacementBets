@@ -94,7 +94,7 @@ export default function Header() {
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 0.3 }}
               >
-                <Briefcase className="h-5 w-5 text-green-400" />
+                <Briefcase className="h-5 w-5 text-emerald-400" />
                 <span className="text-sm font-medium text-gray-200">
                   {formattedTokens} tokens
                 </span>
@@ -104,7 +104,7 @@ export default function Header() {
                 <DropdownMenuTrigger asChild>
                   <Avatar className="cursor-pointer">
                     <AvatarImage src="/placeholder.svg?height=40&width=40" alt={user?.name || 'User'} />
-                    <AvatarFallback className="bg-green-500 text-gray-900">
+                    <AvatarFallback className="bg-emerald-500 text-gray-900">
                       {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                     </AvatarFallback>
                   </Avatar>
@@ -118,34 +118,34 @@ export default function Header() {
                     <p className="text-xs text-gray-400">{user?.email}</p>
                   </div>
                   <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <User className="mr-2 h-5 w-5 text-green-400" />
-                    <Link to="/profile">Profile</Link>
+                    <User className="mr-2 h-5 w-5 text-emerald-400" />
+                    <Link to="/home">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <Settings className="mr-2 h-5 w-5 text-green-400" />
-                    <Link to="/settings">Settings</Link>
+                    <Settings className="mr-2 h-5 w-5 text-emerald-400" />
+                    <Link to="/home">Settings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <Book className="mr-2 h-5 w-5 text-green-400" />
-                    <Link to="/rules">Rules</Link>
+                    <Book className="mr-2 h-5 w-5 text-emerald-400" />
+                    <Link to="/home">Rules</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <Share2 className="mr-2 h-5 w-5 text-green-400" />
-                    <Link to="/refer">Refer and Earn</Link>
+                    <Share2 className="mr-2 h-5 w-5 text-emerald-400" />
+                    <Link to="/home">Refer and Earn</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <BookOpen className="mr-2 h-5 w-5 text-green-400" />
+                    <BookOpen className="mr-2 h-5 w-5 text-emerald-400" />
                     <a href="https://placement-portal-frontend-xi.vercel.app/" target="_blank" rel="noopener noreferrer">
                       Resources
                     </a>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <MessageSquare className="mr-2 h-5 w-5 text-green-400" />
-                    <Link to="/chatbot">Chat Bot</Link>
+                    <MessageSquare className="mr-2 h-5 w-5 text-emerald-400" />
+                    <Link to="/home">Chat Bot</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-gray-700" />
                   <DropdownMenuItem 
-                    className="flex items-center p-2 hover:bg-green-600/20 text-green-400 transition-colors cursor-pointer"
+                    className="flex items-center p-2 hover:bg-emerald-600/20 text-emerald-400 transition-colors cursor-pointer"
                     onClick={handleLogout}
                   >
                     <LogOut className="mr-2 h-5 w-5" />
@@ -158,7 +158,7 @@ export default function Header() {
         </div>
 
         {/* Promotional Banner */}
-        <div className="bg-green-500 py-2 overflow-hidden">
+        <div className="bg-emerald-500 py-2 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4">
             <AnimatePresence mode="wait">
               <motion.div
@@ -187,7 +187,7 @@ export default function Header() {
                     className={({ isActive }) =>
                       `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center ${
                         isActive
-                          ? 'bg-green-500 text-gray-900'
+                          ? 'bg-emerald-500 text-gray-900'
                           : 'hover:bg-gray-600'
                       }`
                     }
@@ -237,7 +237,7 @@ export default function Header() {
                       className={({ isActive }) =>
                         `block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 flex items-center ${
                           isActive
-                            ? 'bg-green-500 text-gray-900'
+                            ? 'bg-emerald-500 text-gray-900'
                             : 'text-gray-200 hover:bg-gray-600 hover:text-white'
                         }`
                       }

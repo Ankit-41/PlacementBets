@@ -26,7 +26,7 @@ const ExpiredBetDialog = ({ bet, onClose }) => (
       </div>
     </DialogHeader>
 
-    <ScrollArea className="h-[60vh] mt-4 rounded-md border border-gray-700 bg-gray-800/50 backdrop-blur-sm">
+    <ScrollArea className=" mt-4 rounded-md border border-gray-700 bg-gray-800/50 backdrop-blur-sm">
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-800 border-b border-gray-700">
@@ -59,8 +59,8 @@ const ExpiredBetDialog = ({ bet, onClose }) => (
               <TableCell>{individual.forTokens}</TableCell>
               <TableCell>{individual.againstTokens}</TableCell>
               <TableCell>
-                <Badge 
-                  variant={individual.result === 'won' ? 'default' : 'destructive'} 
+                <Badge
+                  variant={individual.result === 'won' ? 'default' : 'destructive'}
                   className={`${individual.result === 'won' ? 'bg-green-500' : 'bg-red-500'} text-white`}
                 >
                   {individual.result === 'won' ? 'Selected' : 'Not Selected'}
@@ -89,7 +89,7 @@ export default function ExpiredBets() {
             'Authorization': `Bearer ${token}`
           }
         })
-        
+
         if (response.data.status === 'success' && Array.isArray(response.data.data)) {
           setExpiredBets(response.data.data)
         } else {
@@ -125,7 +125,7 @@ export default function ExpiredBets() {
 
   return (
     <div className="min-h-screen space-y-6 p-4 bg-gradient-to-b from-gray-900 to-gray-800">
-      <motion.div 
+      <motion.div
         className="text-center mb-8"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -135,17 +135,18 @@ export default function ExpiredBets() {
           Expired Bets
         </h1>
         <p className="text-gray-400 text-lg">View results of completed placement bets</p>
+
       </motion.div>
 
       <AnimatePresence>
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pr-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {expiredBets.map((bet, index) => (
-            <Dialog 
+            <Dialog
               key={bet._id}
               onOpenChange={(open) => {
                 if (open) setSelectedBet(bet)
@@ -153,7 +154,7 @@ export default function ExpiredBets() {
               }}
             >
               <DialogTrigger asChild>
-                <MotionCard 
+                <MotionCard
                   className="cursor-pointer bg-gray-800 bg-opacity-60 backdrop-blur-md hover:shadow-2xl transition-all duration-300 rounded-2xl border border-gray-700 hover:border-emerald-500 overflow-hidden"
                   whileHover={{ scale: 1.03 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -185,7 +186,7 @@ export default function ExpiredBets() {
                       {bet.individuals.slice(0, 2).map((individual) => (
                         <div key={individual.id} className="flex justify-between items-center bg-gray-700 rounded-lg p-3">
                           <span className="text-sm text-gray-200 font-medium">{individual.name}</span>
-                          <Badge 
+                          <Badge
                             variant={individual.result === 'won' ? 'default' : 'destructive'}
                             className={`${individual.result === 'won' ? 'bg-green-500' : 'bg-red-500'} text-white flex items-center gap-1`}
                           >

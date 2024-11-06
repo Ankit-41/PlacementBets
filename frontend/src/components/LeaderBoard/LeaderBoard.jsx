@@ -224,6 +224,7 @@ export default function Leaderboard() {
       </div>
     );
   }
+  
 
   if (error) {
     return (

@@ -4,25 +4,34 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const { protect } = require('../middleware/auth');
 const Bet = require('../models/Bet');
+const ExpiredBet = require('../models/ExpiredBet');
 const User = require('../models/User');
 const Company = require('../models/Company');
 const calculateStakes = require('../utils/stakeCalculator');
 const { ErrorResponse } = require('../middleware/errorHandler');
 
-// Get user's bets
+// Get user's bets (both active and expired)
 router.get('/my-bets', protect, async (req, res, next) => {
   try {
-    const bets = await Bet.find({ bettorId: req.user._id })
-      .sort({ createdAt: -1 }) // Sort by most recent first
-      .lean(); // Use lean for better performance since we don't need Mongoose document features
+    // Get active bets from Bet model
+    const activeBets = await Bet.find({ bettorId: req.user._id })
+      .sort({ createdAt: -1 })
+      .lean();
 
-    if (!bets) {
-      return next(new ErrorResponse('No bets found', 404));
-    }
+    // Get expired bets from ExpiredBet model
+    const expiredBets = await ExpiredBet.find({ bettorId: req.user._id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Combine and format both sets of bets
+    const allBets = [
+      ...activeBets.map(bet => ({ ...bet, status: 'active' })),
+      ...expiredBets.map(bet => ({ ...bet, status: 'expired' }))
+    ].sort((a, b) => b.createdAt - a.createdAt); // Sort all bets by date
 
     res.status(200).json({
       status: 'success',
-      data: bets
+      data: allBets
     });
   } catch (error) {
     next(new ErrorResponse(error.message || 'Error fetching bets', 500));
