@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { 
-  Briefcase, 
-  User, 
-  Settings, 
-  Book, 
-  Share2, 
-  BookOpen, 
-  MessageSquare, 
+import {
+  Briefcase,
+  User,
+  Settings,
+  Book,
+  Share2,
+  BookOpen,
+  MessageSquare,
   LogOut,
   Menu,
   X,
@@ -28,21 +28,20 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentOffer, setCurrentOffer] = useState(0)
   const [isSticky, setIsSticky] = useState(false)
+  const [showOffer, setShowOffer] = useState(true)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const tabs = [
-    { name: 'Active Bets', path: '/activebets', icon: <Flame className="w-4 h-4 mr-1" /> },
-    { name: 'Expired Bets', path: '/expiredbets', icon: <History className="w-4 h-4 mr-1" /> },
-    { name: 'Leaderboard', path: '/leaderboard', icon: <Trophy className="w-4 h-4 mr-1" /> },
-    { name: 'My Bets', path: '/mybets', icon: <Target className="w-4 h-4 mr-1" /> },
-    { name: 'Admin Panel', path: '/adminPanel', icon: <Shield className="w-4 h-4 mr-1" /> },
-  
+    { name: 'Active Bets', path: '/activebets', icon: <Flame className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    { name: 'Expired Bets', path: '/expiredbets', icon: <History className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    { name: 'Leaderboard', path: '/leaderboard', icon: <Trophy className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    { name: 'My Bets', path: '/mybets', icon: <Target className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    { name: 'Admin Panel', path: '/adminPanel', icon: <Shield className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
   ]
 
-
   const offers = [
-   "🔥 Kickstart Your Betting Journey with Premium Odds!",
-   "🎓 Placement Season Surprise: Bet Big, Win Bigger!",
+    "🔥 Kickstart Your Betting Journey with Premium Odds!",
+    "🎓 Placement Season Surprise: Bet Big, Win Bigger!",
     "🔓 Unlock Elite Betting Opportunities as a New Player!"
   ]
 
@@ -67,7 +66,7 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await logout()
-      navigate('/')
+      navigate('/home')
     } catch (error) {
       console.error('Logout error:', error)
     }
@@ -77,78 +76,74 @@ export default function Header() {
 
   return (
     <>
-      <div className={`h-[${isSticky ? '164px' : '0px'}] transition-all duration-300`} />
-      <header className={`w-full bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-700 transition-all duration-300 ${isSticky ? 'fixed top-0 left-0 right-0 z-50' : 'relative'}`}>
-        <div className="max-w-7xl mx-auto px-4">
+      <div className={`h-[${isSticky ? (showOffer ? '164px' : '124px') : '0px'}] transition-all duration-300`} />
+      <header className={`w-full bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-700 transition-all duration-300 ${isSticky ? 'fixed top-0 left-0 right-0 z-50' : 'relative'}`}
+      style={{
+       
+        paddingTop: isSticky ? '5px' : '0', // Adjust according to your navbar height
+      }}
+      >
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
           {/* Top Header Section */}
-          <div className="flex items-center justify-between py-3">
-            <Link to="/home" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-white">JobJinx</span>
+          <div className="flex items-center justify-between py-2 sm:py-3">
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-xl sm:text-2xl font-bold text-white">JobJinx</span>
             </Link>
+            <motion.div
+              className="flex items-center space-x-1 sm:space-x-2 bg-gray-800 p-1 sm:p-2 rounded-full"
+              key={formattedTokens}
+              initial={{ scale: 1 }}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 0.3 }}
+            >
+              <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400" />
+              <span className="text-xs sm:text-sm font-medium text-gray-200">
+                {formattedTokens}
+              </span>
+            </motion.div>
+            <div className="flex items-center space-x-2 sm:space-x-4">
 
-            <div className="flex items-center space-x-4">
-              <motion.div 
-                className="flex items-center space-x-2 bg-gray-800 p-2 rounded-full"
-                key={formattedTokens}
-                initial={{ scale: 1 }}
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <Briefcase className="h-5 w-5 text-emerald-400" />
-                <span className="text-sm font-medium text-gray-200">
-                  {formattedTokens} tokens
-                </span>
-              </motion.div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="cursor-pointer">
+                  <Avatar className="cursor-pointer h-8 w-8 sm:h-10 sm:w-10">
                     <AvatarImage src="/placeholder.svg?height=40&width=40" alt={user?.name || 'User'} />
-                    <AvatarFallback className="bg-emerald-500 text-gray-900">
+                    <AvatarFallback className="bg-emerald-500 text-gray-900 text-xs sm:text-sm">
                       {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 bg-gray-800 text-gray-200 rounded-md shadow-lg border border-gray-700"
+                  className="w-48 sm:w-56 bg-gray-800 text-gray-200 rounded-md shadow-lg border border-gray-700"
                 >
                   <div className="px-2 py-1.5 border-b border-gray-700">
-                    <p className="text-sm font-medium">{user?.name}</p>
+                    <p className="text-xs sm:text-sm font-medium">{user?.name}</p>
                     <p className="text-xs text-gray-400">{user?.email}</p>
                   </div>
-                  <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <User className="mr-2 h-5 w-5 text-emerald-400" />
-                    <Link to="/home">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <Settings className="mr-2 h-5 w-5 text-emerald-400" />
-                    <Link to="/home">Settings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <Book className="mr-2 h-5 w-5 text-emerald-400" />
-                    <Link to="/home">Rules</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <Share2 className="mr-2 h-5 w-5 text-emerald-400" />
-                    <Link to="/home">Refer and Earn</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <BookOpen className="mr-2 h-5 w-5 text-emerald-400" />
-                    <a href="https://placement-portal-frontend-xi.vercel.app/" target="_blank" rel="noopener noreferrer">
-                      Resources
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-700 transition-colors">
-                    <MessageSquare className="mr-2 h-5 w-5 text-emerald-400" />
-                    <Link to="/home">Chat Bot</Link>
-                  </DropdownMenuItem>
+                  {[
+                    { icon: User, label: 'Profile', path: '/' },
+                    { icon: Settings, label: 'Settings', path: '/' },
+                    { icon: Book, label: 'Rules', path: '/' },
+                    { icon: Share2, label: 'Refer and Earn', path: '/' },
+                    { icon: BookOpen, label: 'Resources', path: 'https://placement-portal-frontend-xi.vercel.app/', external: true },
+                    { icon: MessageSquare, label: 'Chat Bot', path: '/' },
+                  ].map((item) => (
+                    <DropdownMenuItem key={item.label} className="flex items-center p-2 hover:bg-gray-700 transition-colors text-xs sm:text-sm">
+                      <item.icon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-emerald-400" />
+                      {item.external ? (
+                        <a href={item.path} target="_blank" rel="noopener noreferrer">{item.label}</a>
+                      ) : (
+                        <Link to={item.path}>{item.label}</Link>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
                   <DropdownMenuSeparator className="bg-gray-700" />
-                  <DropdownMenuItem 
-                    className="flex items-center p-2 hover:bg-emerald-600/20 text-emerald-400 transition-colors cursor-pointer"
+                  <DropdownMenuItem
+                    className="flex items-center p-2 hover:bg-emerald-600/20 text-emerald-400 transition-colors cursor-pointer text-xs sm:text-sm"
                     onClick={handleLogout}
                   >
-                    <LogOut className="mr-2 h-5 w-5" />
+                    <LogOut className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -158,37 +153,44 @@ export default function Header() {
         </div>
 
         {/* Promotional Banner */}
-        <div className="bg-emerald-500 py-2 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentOffer}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-center text-gray-900 font-semibold"
-              >
-                {offers[currentOffer]}
-              </motion.div>
-            </AnimatePresence>
+        {showOffer && (
+          <div className="bg-emerald-500 py-1 sm:py-2 overflow-hidden relative">
+            <div className="max-w-7xl mx-auto px-4">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentOffer}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center text-gray-900 font-semibold text-xs sm:text-sm"
+                >
+                  {offers[currentOffer]}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <button
+              onClick={() => setShowOffer(false)}
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-900 hover:text-gray-700 transition-colors"
+            >
+              <X className="h-4 w-4 mr-1 sm:h-5 sm:w-5 lg:mr-10" />
+            </button>
           </div>
-        </div>
+        )}
 
         {/* Navigation Section */}
         <nav className="bg-gradient-to-r from-gray-800 to-gray-700 text-white shadow-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-14">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4">
+            <div className="flex items-center justify-between h-12 sm:h-14">
               <div className="hidden md:flex space-x-1">
                 {tabs.map((tab) => (
                   <NavLink
                     key={tab.name}
                     to={tab.path}
                     className={({ isActive }) =>
-                      `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center ${
-                        isActive
-                          ? 'bg-emerald-500 text-gray-900'
-                          : 'hover:bg-gray-600'
+                      `px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors duration-300 flex items-center ${isActive
+                        ? 'bg-emerald-500 text-gray-900'
+                        : 'hover:bg-gray-600'
                       }`
                     }
                   >
@@ -203,15 +205,15 @@ export default function Header() {
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   type="button"
-                  className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  className="inline-flex items-center justify-center p-1 sm:p-2 rounded-md text-gray-200 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                   aria-controls="mobile-menu"
                   aria-expanded={isMenuOpen}
                 >
                   <span className="sr-only">Open main menu</span>
                   {!isMenuOpen ? (
-                    <Menu className="block h-6 w-6" aria-hidden="true" />
+                    <Menu className="block h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
                   ) : (
-                    <X className="block h-6 w-6" aria-hidden="true" />
+                    <X className="block h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
                   )}
                 </button>
               </div>
@@ -235,10 +237,9 @@ export default function Header() {
                       key={tab.name}
                       to={tab.path}
                       className={({ isActive }) =>
-                        `block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 flex items-center ${
-                          isActive
-                            ? 'bg-emerald-500 text-gray-900'
-                            : 'text-gray-200 hover:bg-gray-600 hover:text-white'
+                        `block px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors duration-300 flex items-center ${isActive
+                          ? 'bg-emerald-500 text-gray-900'
+                          : 'text-gray-200 hover:bg-gray-600 hover:text-white'
                         }`
                       }
                       onClick={() => setIsMenuOpen(false)}

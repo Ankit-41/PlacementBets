@@ -13,6 +13,7 @@ import { ChevronRight, Loader2, Users, BarChart, TrendingUp, AlertTriangle, Info
 import { Mail, Timer, Trophy } from 'lucide-react';
 import { useAuth } from './../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ForgotPasswordForm from './ForgotPasswordForm';  // Adjust the import path as needed
 
 // Import react-toastify components and styles
 import { ToastContainer, toast } from 'react-toastify';
@@ -36,6 +37,7 @@ export default function LandingPage() {
     const [formError, setFormError] = useState('');
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [isSigningUp, setIsSigningUp] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
 
     const { login, signup, error } = useAuth();
 
@@ -165,7 +167,7 @@ export default function LandingPage() {
 
         try {
             await login(email, password);
-            navigate('/home');
+            navigate('/');
         } catch (error) {
             console.error('Login error:', error);
             setFormError(error.response?.data?.message || 'Login failed');
@@ -207,7 +209,7 @@ export default function LandingPage() {
                 enrollmentNumber,
                 password
             });
-            navigate('/home');
+            navigate('/');
             toast.success('Signup successful! Welcome to JobJinx.');
         } catch (error) {
             console.error('Signup error:', error);
@@ -244,8 +246,8 @@ export default function LandingPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-                                <TabsList className="grid w-full grid-cols-2 bg-gray-700 rounded-full p-1 mb-8">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6 text-emerald-300 ">
+                                <TabsList className="grid w-full grid-cols-2 rounded-full p-1 mb-8">
                                     <TabsTrigger
                                         value="login"
                                         className={` mb-6 px-6 text-sm font-semibold rounded-full transition-all duration-300 ${activeTab === 'login'
@@ -276,7 +278,7 @@ export default function LandingPage() {
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 required
-                                                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 placeholder="your.email@iitr.ac.in"
                                             />
                                         </div>
@@ -288,7 +290,7 @@ export default function LandingPage() {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 required
-                                                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 placeholder="Enter your password"
                                             />
                                         </div>
@@ -314,7 +316,16 @@ export default function LandingPage() {
                                         </Button>
                                     </form>
                                 </TabsContent>
-
+                                <div className="flex justify-end mt-5">
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        className="text-emerald-400 hover:text-emerald-300 p-0 h-auto font-normal"
+                                        onClick={() => setShowForgotPassword(true)}
+                                    >
+                                        Forgot Password?
+                                    </Button>
+                                </div>
                                 <TabsContent value="signup">
                                     <form className="space-y-6" onSubmit={handleSignUp}>
                                         <div className="space-y-2">
@@ -325,7 +336,7 @@ export default function LandingPage() {
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
                                                 required
-                                                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 placeholder="John Doe"
                                             />
                                         </div>
@@ -338,7 +349,7 @@ export default function LandingPage() {
                                                 value={enrollmentNumber}
                                                 onChange={handleEnrollmentChange}
                                                 maxLength={8}
-                                                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 placeholder="12345678"
                                             />
                                             {enrollmentError && (
@@ -356,7 +367,7 @@ export default function LandingPage() {
                                                     placeholder="your.name@iitr.ac.in"
                                                     required
                                                     disabled={isEmailVerified}
-                                                    className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                    className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 />
                                                 {!isEmailVerified && (
                                                     <Button
@@ -391,7 +402,7 @@ export default function LandingPage() {
                                                         placeholder="Enter 6-digit OTP"
                                                         onChange={(e) => setOtp(e.target.value)}
                                                         maxLength={6}
-                                                        className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                        className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                     />
                                                     <Button
                                                         type="button"
@@ -432,7 +443,7 @@ export default function LandingPage() {
                                                 required
                                                 value={password}
                                                 onChange={handlePasswordChange}
-                                                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 placeholder="Enter a strong password"
                                             />
                                         </div>
@@ -444,7 +455,7 @@ export default function LandingPage() {
                                                 required
                                                 value={confirmPassword}
                                                 onChange={handleConfirmPasswordChange}
-                                                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500"
+                                                className="bg-gray-700 text-gray-100 border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 placeholder:text-gray-400 placeholder:opacity-70"
                                                 placeholder="Confirm your password"
                                             />
                                         </div>
@@ -556,6 +567,23 @@ export default function LandingPage() {
                 pauseOnHover
                 theme="dark"
             />
+            {showForgotPassword && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-gray-800 rounded-3xl p-6 w-full max-w-md border border-gray-700">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-emerald-400">Reset Password</h2>
+                            <Button
+                                variant="ghost"
+                                className="text-gray-400 hover:text-gray-300"
+                                onClick={() => setShowForgotPassword(false)}
+                            >
+                                ×
+                            </Button>
+                        </div>
+                        <ForgotPasswordForm onClose={() => setShowForgotPassword(false)} />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

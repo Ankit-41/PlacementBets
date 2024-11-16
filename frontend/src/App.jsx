@@ -2,9 +2,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+// import Layout from './components/Finder/Layout';
 import Header from './components/homepage/Header';
 import HomePage from './components/homepage/HomePage';
 import Leaderboard from './components/LeaderBoard/LeaderBoard';
+import UserProfile from './components/userProfile/UserProfile';
 import ActiveBets from './components/ActiveBets/ActiveBets';
 import ExpiredBets from './components/ExpiredBets/ExpiredBets';
 import MyBets from './components/MyBets/MyBets';
@@ -16,9 +18,9 @@ import Unauthorized from './components/adminPanel/unauthorized';
 
 const AdminProtectedLayout = ({ children }) => {
   const { user } = useAuth();
-  
+
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   if (user.role !== 'admin') {
@@ -38,9 +40,9 @@ const AdminProtectedLayout = ({ children }) => {
 
 const ProtectedLayout = ({ children }) => {
   const { user } = useAuth();
-  
+
   if (!user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   return (
@@ -58,49 +60,57 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          
-          <Route path="/home" element={
-            <ProtectedLayout>
-              <HomePage />
-            </ProtectedLayout>
-          } />
-          
-          <Route path="/leaderboard" element={
-            <ProtectedLayout>
-              <Leaderboard />
-            </ProtectedLayout>
-          } />
-          
-          <Route path="/activebets" element={
-            <ProtectedLayout>
-              <ActiveBets />
-            </ProtectedLayout>
-          } />
-          
-          <Route path="/expiredbets" element={
-            <ProtectedLayout>
-              <ExpiredBets />
-            </ProtectedLayout>
-          } />
-          <Route path="/adminPanel" element={
-             <AdminProtectedLayout>
-             <AdminPanel />
-           </AdminProtectedLayout>
-          } />
-          
-          <Route path="/mybets" element={
-            <ProtectedLayout>
-              <MyBets />
-            </ProtectedLayout>
-          } />
-          
-          {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {/* <Layout> */}
+          <Routes>
+            <Route path="/home" element={<LandingPage />} />
+
+            <Route path="/" element={
+              <ProtectedLayout>
+                <HomePage />
+              </ProtectedLayout>
+            } />
+
+            <Route path="/leaderboard" element={
+              <ProtectedLayout>
+                <Leaderboard />
+              </ProtectedLayout>
+            } />
+
+            <Route path="/user/:userId" element={
+              <ProtectedLayout>
+                <UserProfile />
+              </ProtectedLayout>
+            } />
+
+            <Route path="/activebets" element={
+              <ProtectedLayout>
+                <ActiveBets />
+              </ProtectedLayout>
+            } />
+
+            <Route path="/expiredbets" element={
+              <ProtectedLayout>
+                <ExpiredBets />
+              </ProtectedLayout>
+            } />
+            <Route path="/adminPanel" element={
+              <AdminProtectedLayout>
+                <AdminPanel />
+              </AdminProtectedLayout>
+            } />
+
+            <Route path="/mybets" element={
+              <ProtectedLayout>
+                <MyBets />
+              </ProtectedLayout>
+            } />
+
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
+        {/* </Layout> */}
       </Router>
-    </AuthProvider>
+    </AuthProvider >
   );
 }
 

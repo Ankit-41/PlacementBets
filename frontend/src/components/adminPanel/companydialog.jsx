@@ -207,7 +207,7 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="expiresIn">Expires In</Label>
+                <Label htmlFor="expiresIn">expires on</Label>
                 <Input
                   id="expiresIn"
                   name="expiresIn"

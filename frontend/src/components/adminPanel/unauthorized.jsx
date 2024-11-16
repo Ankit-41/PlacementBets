@@ -18,7 +18,7 @@ const Unauthorized = () => {
           You don't have permission to access this page.
         </p>
         <Button
-          onClick={() => navigate('/home')}
+          onClick={() => navigate('/')}
           className="bg-blue-600 hover:bg-blue-700"
         >
           Return to Home

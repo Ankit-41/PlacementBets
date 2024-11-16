@@ -157,8 +157,91 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({ status: 'success' });
 };
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, password } = req.body;
+    console.log('Reset password attempt for email:', email); // Debug log
 
+    // 1. Input validation
+    if (!email || !otp || !password) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please provide email, OTP, and new password'
+      });
+    }
 
+    // 2. Verify if there's a verified OTP session
+    const storedData = otpStore.get(email);
+    console.log('Stored OTP data:', storedData); // Debug log
+
+    if (!storedData) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No active password reset session. Please request a new OTP.'
+      });
+    }
+
+    if (!storedData.verified) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'OTP has not been verified. Please verify OTP first.'
+      });
+    }
+
+    if (storedData.otp !== otp) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid OTP. Please try again.'
+      });
+    }
+
+    // 3. Check OTP expiration (10 minutes)
+    if (Date.now() - storedData.timestamp > 10 * 60 * 1000) {
+      otpStore.delete(email);
+      return res.status(400).json({
+        status: 'error',
+        message: 'OTP has expired. Please request a new one.'
+      });
+    }
+
+    // 4. Find and update user
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No user found with this email address.'
+      });
+    }
+
+    // 5. Validate new password
+    if (password.length < 8) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Password must be at least 8 characters long'
+      });
+    }
+
+    // 6. Update password
+    user.password = password;
+    await user.save();
+
+    // 7. Clear the OTP from store only after successful password reset
+    otpStore.delete(email);
+
+    // 8. Send success response
+    res.status(200).json({
+      status: 'success',
+      message: 'Password has been reset successfully'
+    });
+
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message || 'Failed to reset password'
+    });
+  }
+};
 // controllers/authController.js
 
 const nodemailer = require('nodemailer');
@@ -279,12 +362,12 @@ exports.verifyOTP = async (req, res) => {
     }
 
     // OTP verified successfully
-    otpStore.delete(email);
+    storedData.verified = true;
+    otpStore.set(email, storedData);  // Update the stored data
     res.status(200).json({
       status: 'success',
       message: 'Email verified successfully'
     });
-
   } catch (error) {
     console.error('Error verifying OTP:', error);
     res.status(500).json({

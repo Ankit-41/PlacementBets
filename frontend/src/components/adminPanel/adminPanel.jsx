@@ -208,7 +208,7 @@ function ImprovedAdminPanel() {
                   <TableRow className="bg-gray-800/50">
                     <TableHead className="text-emerald-400">Company</TableHead>
                     <TableHead className="text-emerald-400">Profile</TableHead>
-                    <TableHead className="text-emerald-400">Expires In</TableHead>
+                    <TableHead className="text-emerald-400">expires on</TableHead>
                     <TableHead className="text-emerald-400">Total Token Bet</TableHead>
                     <TableHead className="text-emerald-400">Status</TableHead>
                     <TableHead className="text-emerald-400">Action</TableHead>

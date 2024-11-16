@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Card, CardContent } from "@/components/ui/card"
-import { Play, BarChart, Code, Package, Database, Brain, Cpu, MoreHorizontal, Zap, TrendingUp, Clock, Loader } from 'lucide-react'
+import { Play, BarChart, Code, Package, Database, Brain, Cpu, MoreHorizontal, Zap, TrendingUp, Clock, Loader, AlertTriangle } from 'lucide-react'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from 'framer-motion'
 import { BettingMenuDialog } from '../ActiveBets/BettingMenuDialog'
 import ActiveBets from '../ActiveBets/ActiveBets'
+import { LiveBetsSkeleton } from './LiveBetsSkeleton'
 
 const categoryIcons = {
   Quant: BarChart,
@@ -56,7 +57,6 @@ export default function LiveBets() {
               againstTokens: user.againstTokens
             }))
           }))
-          // Sort events by totalTokenBet in descending order
           transformedEvents.sort((a, b) => b.totalTokenBet - a.totalTokenBet)
           setLiveEvents(transformedEvents)
         } else {
@@ -77,7 +77,6 @@ export default function LiveBets() {
     ? liveEvents 
     : liveEvents.filter(event => event.category === activeCategory)
 
-  // Get only top 3 events by totalTokenBet for display
   const topEvents = filteredEvents.slice(0, 3)
 
   if (showAllBets) {
@@ -85,29 +84,27 @@ export default function LiveBets() {
   }
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
-    </div>
-    )
+      return <LiveBetsSkeleton />
   }
+
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-        <p className="text-red-500 text-xl">{error}</p>
+      <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+        <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+        <p className="text-red-500 text-lg text-center px-4">{error}</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 md:p-6 rounded-lg shadow-2xl">
-      <h2 className="text-3xl font-bold mb-6 flex items-center text-emerald-400">
-        <Zap className="mr-2 h-8 w-8" /> Live Events
+    <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-4 rounded-lg shadow-xl">
+      <h2 className="text-2xl md:text-3xl font-bold mb-4 flex items-center text-emerald-400">
+        <Zap className="mr-2 h-6 w-6 md:h-8 md:w-8" /> Live Events
       </h2>
       
-      <ScrollArea className="w-full rounded-lg border border-gray-700 bg-gray-800 bg-opacity-90 backdrop-blur-md p-4 mb-8">
-        <div className="flex space-x-6 py-3 px-2">
+      <ScrollArea className="w-full rounded-lg backdrop-blur-md p-2 mb-6">
+        <div className="flex space-x-8 py-2">
           <CategoryButton category="All" activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
           {Object.keys(categoryIcons).map((category) => (
             <CategoryButton key={category} category={category} activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
@@ -116,18 +113,18 @@ export default function LiveBets() {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-semibold text-gray-200">Hot Bets</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-gray-200">Hot Bets</h3>
         <Button
           variant="outline"
           onClick={() => setShowAllBets(true)}
-          className="bg-emerald-500 text-gray-900 hover:bg-emerald-600 font-semibold px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105"
+          className="bg-emerald-500 text-gray-900 hover:bg-emerald-600 text-xs md:text-sm font-semibold px-3 py-1 md:px-4 md:py-2 rounded-full transition-all duration-200 transform hover:scale-105"
         >
           View All Bets
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3  ">
         <AnimatePresence>
           {topEvents.map((event, index) => (
             <motion.div
@@ -143,38 +140,38 @@ export default function LiveBets() {
               }}>
                 <DialogTrigger asChild>
                   <MotionCard 
-                    className="cursor-pointer bg-gradient-to-br from-gray-800 to-gray-700 p-6 rounded-xl overflow-hidden shadow-lg relative transition-all duration-300 hover:shadow-2xl"
-                    whileHover={{ scale: 1.03 }}
+                    className="cursor-pointer border border-gray-700 hover:border-emerald-500 bg-gradient-to-br from-gray-800 to-gray-700 p-4 rounded-xl overflow-hidden shadow-lg relative transition-all duration-300 hover:shadow-2xl"
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <CardContent className="p-0">
-                      <div className="flex justify-between items-start mb-4">
-                        <h4 className="text-xl font-bold text-emerald-400">{event.company}</h4>
+                      <div className="flex justify-between items-start mb-3 ">
+                        <h4 className="text-lg font-bold text-emerald-400">{event.company}</h4>
                         <div className="flex items-center space-x-2">
-                          <span className="text-xs bg-emerald-500 text-gray-900 px-2 py-1 rounded-full font-semibold">
+                          <span className="text-xs bg-emerald-500 text-gray-900 px-2 py-0.5 rounded-full font-semibold">
                             {event.category}
                           </span>
                           <motion.div
-                            className="w-3 h-3 rounded-full bg-red-500"
+                            className="w-2 h-2 rounded-full bg-red-500"
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 1.5, repeat: Infinity }}
                           />
                         </div>
                       </div>
-                      {event.users.slice(0, 3).map((user, userIndex) => (
-                        <div key={userIndex} className="flex justify-between items-center text-gray-300 mb-2">
+                      {event.users.slice(0, 2).map((user, userIndex) => (
+                        <div key={userIndex} className="flex justify-between items-center text-gray-300 mb-1 text-sm">
                           <span>{user.name}</span>
                           <span className="font-semibold text-emerald-400">{user.odds}</span>
                         </div>
                       ))}
-                      <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
+                      <div className="mt-3 flex justify-between items-center text-xs text-gray-400">
                         <span className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {event.timeLeft} left
+                          <Clock className="w-3 h-3 mr-1" />
+                          {event.timeLeft}
                         </span>
                         <span className="flex items-center">
-                          <TrendingUp className="w-4 h-4 mr-1" />
-                          {event.totalTokenBet} tokens bet
+                          <TrendingUp className="w-3 h-3 mr-1" />
+                          {event.totalTokenBet} tokens
                         </span>
                       </div>
                     </CardContent>
@@ -217,20 +214,20 @@ function CategoryButton({ category, activeCategory, setActiveCategory }) {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={() => setActiveCategory(category)}
-      className={`flex flex-col items-center space-y-2 focus:outline-none transition-all duration-300 ${
+      className={`flex flex-col items-center space-y-1 focus:outline-none transition-all duration-300 ${
         isActive ? 'text-emerald-400' : 'text-gray-400 hover:text-gray-200'
       }`}
     >
-      <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
         isActive 
           ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/50' 
           : 'bg-gray-700 hover:bg-gray-600'
       }`}>
-        <Icon className={`h-8 w-8 transition-all duration-300 ${
+        <Icon className={`h-5 w-5 md:h-6 md:w-6 transition-all duration-300 ${
           isActive ? 'text-gray-900' : 'text-gray-300'
         }`} />
       </div>
-      <span className={`text-sm font-medium transition-all duration-300 ${
+      <span className={`text-xs md:text-sm font-medium transition-all duration-300 ${
         isActive ? 'text-emerald-400' : 'text-gray-400'
       }`}>
         {category}
