@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { protect } = require('../middleware/auth');
+const { protect } = require('../controllers/authController');
 const Bet = require('../models/Bet');
 const ExpiredBet = require('../models/ExpiredBet');
 const User = require('../models/User');

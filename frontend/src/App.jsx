@@ -11,6 +11,7 @@ import ActiveBets from './components/ActiveBets/ActiveBets';
 import ExpiredBets from './components/ExpiredBets/ExpiredBets';
 import MyBets from './components/MyBets/MyBets';
 import LandingPage from './components/Aaiye/LandingPage';
+import IndividualSearch from './components/IndividualSearch/IndividualSearch';
 import FooterDescription from './components/homepage/FooterDescription';
 import AdminPanel from './components/adminPanel/adminPanel';
 import { useAuth } from './contexts/AuthContext';
@@ -91,6 +92,11 @@ function App() {
             <Route path="/expiredbets" element={
               <ProtectedLayout>
                 <ExpiredBets />
+              </ProtectedLayout>
+            } />
+            <Route path="/individualSearch" element={
+              <ProtectedLayout>
+                <IndividualSearch />
               </ProtectedLayout>
             } />
             <Route path="/adminPanel" element={

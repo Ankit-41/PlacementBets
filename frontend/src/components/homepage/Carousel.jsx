@@ -174,7 +174,7 @@ export default function CompanyCarousel() {
                     </div>
                   </CardContent>
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                  <div className="absolute top-0 right-0 h-16 w-16 md:h-24 md:w-24 m-5 opacity-70">
+                  <div className="absolute top-0 right-0 h-20 w-20 md:h-24 md:w-24 m-5 opacity-70">
                     <img 
                       src={company.logo} 
                       alt="Company Logo"

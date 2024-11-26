@@ -160,7 +160,7 @@ export default function LiveBets() {
                       </div>
                       {event.users.slice(0, 2).map((user, userIndex) => (
                         <div key={userIndex} className="flex justify-between items-center text-gray-300 mb-1 text-sm">
-                          <span>{user.name}</span>
+                          <span>{user.name}a</span>
                           <span className="font-semibold text-emerald-400">{user.odds}</span>
                         </div>
                       ))}

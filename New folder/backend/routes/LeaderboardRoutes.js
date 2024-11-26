@@ -14,7 +14,8 @@ router.get('/', protect, async (req, res) => {
       lostBets: 1,
       streak: 1,
       successRate: 1,
-      enrollmentNumber: 1
+      enrollmentNumber: 1,
+      role:1
     }).sort({ tokens: -1 }); // Sort by tokens in descending order
 
     const leaderboardData = users.map(user => ({
@@ -24,7 +25,8 @@ router.get('/', protect, async (req, res) => {
       successfulBets: user.wonBets,
       totalBets: user.wonBets + user.lostBets,
       streak: user.streak,
-      enrollmentNumber: user.enrollmentNumber
+      enrollmentNumber: user.enrollmentNumber,
+      role:user.role
     }));
 
     res.status(200).json({

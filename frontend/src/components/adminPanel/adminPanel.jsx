@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Badge } from "@/components/ui/badge";
 import { Loader2, TrendingUp, Users, AlertTriangle, Check, PlusCircle, RefreshCw } from 'lucide-react';
 import { AddCompanyDialog } from './companydialog';
+import { SyncButton } from './SyncIndividual';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -171,6 +172,7 @@ function ImprovedAdminPanel() {
           <RefreshCw className="mr-2 h-5 w-5" />
           Refresh
         </Button>
+       < SyncButton />
       </div>
 
       <AnimatePresence>

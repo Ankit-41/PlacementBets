@@ -197,7 +197,9 @@ export default function Leaderboard() {
         })
 
         if (leaderboardResponse.data.status === 'success') {
+          const nonAdminUsers = leaderboardResponse.data.data.filter(user => user.role !== 'admin');
           setLeaderboardData(leaderboardResponse.data.data)
+          setLeaderboardData(nonAdminUsers);
         }
 
         if (statsResponse.data.status === 'success') {
@@ -272,7 +274,7 @@ export default function Leaderboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <AnimatedStatsCard
           title="Total Bets Placed"
           value={leaderboardData.reduce((sum, user) => sum + user.totalBets, 0)}
@@ -288,7 +290,7 @@ export default function Leaderboard() {
           value={leaderboardData.reduce((sum, user) => sum + user.tokens, 0).toLocaleString()}
           icon={<Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />}
         />
-      </div>
+      </div> */}
 
       <div className="mb-8">
         <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center text-gray-200">Complete Rankings</h2>

@@ -16,7 +16,7 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
     expiresIn: '',
     logo: 'https://cdn2.hubspot.net/hubfs/53/image8-2.jpg',
     individuals: [],
-    totalTokenBet: 0
+    totalTokenBet: 0,
   });
 
   const [individuals, setIndividuals] = useState([{
@@ -26,19 +26,19 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
     forStake: 1.0,
     againstStake: 1.0,
     forTokens: 0,
-    againstTokens: 0
+    againstTokens: 0,
   }]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const total = individuals.reduce((sum, ind) => 
+    const total = individuals.reduce((sum, ind) =>
       sum + (Number(ind.forTokens) || 0) + (Number(ind.againstTokens) || 0), 0);
-    
+
     setFormData(prev => ({
       ...prev,
-      totalTokenBet: total
+      totalTokenBet: total,
     }));
   }, [individuals]);
 
@@ -46,7 +46,7 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -54,17 +54,30 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
     const newIndividuals = [...individuals];
     let processedValue = value;
 
-    if (field.includes('Stake')) {
-      processedValue = parseFloat(value) || 1.0;
-    } else if (field.includes('Tokens')) {
+    if (field.includes('Tokens')) {
       processedValue = parseInt(value) || 0;
       if (processedValue < 0) processedValue = 0;
-    }
 
-    newIndividuals[index] = {
-      ...newIndividuals[index],
-      [field]: processedValue
-    };
+      newIndividuals[index] = {
+        ...newIndividuals[index],
+        [field]: processedValue,
+      };
+
+      // Recalculate stakes dynamically
+      const forTokens = newIndividuals[index].forTokens;
+      const againstTokens = newIndividuals[index].againstTokens;
+
+      newIndividuals[index].forStake =
+        forTokens > 0 ? parseFloat(((forTokens + againstTokens) / forTokens).toFixed(2)) : 1.0;
+
+      newIndividuals[index].againstStake =
+        againstTokens > 0 ? parseFloat(((forTokens + againstTokens) / againstTokens).toFixed(2)) : 1.0;
+    } else {
+      newIndividuals[index] = {
+        ...newIndividuals[index],
+        [field]: value,
+      };
+    }
 
     setIndividuals(newIndividuals);
   };
@@ -79,8 +92,8 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
         forStake: 1.0,
         againstStake: 1.0,
         forTokens: 0,
-        againstTokens: 0
-      }
+        againstTokens: 0,
+      },
     ]);
   };
 
@@ -103,9 +116,9 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
         throw new Error('Please fill in all company fields');
       }
 
-      const validIndividuals = individuals.every(ind => 
-        ind.name && 
-        ind.enrollmentNumber && 
+      const validIndividuals = individuals.every(ind =>
+        ind.name &&
+        ind.enrollmentNumber &&
         ind.enrollmentNumber.length === 8 &&
         ind.forStake >= 1 &&
         ind.againstStake >= 1 &&
@@ -120,10 +133,10 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
         ...formData,
         individuals: individuals.map(ind => ({
           ...ind,
-          result: 'awaited'
-        }))
+          result: 'awaited',
+        })),
       };
-
+      console.log(finalData);
       const token = localStorage.getItem('token');
       const response = await axios.post(
         'https://jobjinxbackend.vercel.app/api/companies/create',
@@ -131,9 +144,9 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+            'Content-Type': 'application/json',
+          },
+        },
       );
 
       if (response.data.status === 'success') {
@@ -157,8 +170,8 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
               <Building2 className="mr-2" /> Add New Company
             </DialogTitle>
             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="bg-emerald-600 text-white flex items-center gap-2"
               >
                 <Coins className="h-4 w-4" />
@@ -207,7 +220,7 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="expiresIn">expires on</Label>
+                <Label htmlFor="expiresIn">Expires On</Label>
                 <Input
                   id="expiresIn"
                   name="expiresIn"
@@ -251,31 +264,6 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
                           onChange={(e) => handleIndividualChange(index, 'enrollmentNumber', e.target.value)}
                           className="bg-gray-700 border-gray-600"
                           maxLength={8}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid gap-4 grid-cols-2">
-                      <div className="space-y-2">
-                        <Label>For Stake</Label>
-                        <Input
-                          type="number"
-                          value={individual.forStake}
-                          onChange={(e) => handleIndividualChange(index, 'forStake', e.target.value)}
-                          className="bg-gray-700 border-gray-600"
-                          min="1"
-                          step="0.1"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Against Stake</Label>
-                        <Input
-                          type="number"
-                          value={individual.againstStake}
-                          onChange={(e) => handleIndividualChange(index, 'againstStake', e.target.value)}
-                          className="bg-gray-700 border-gray-600"
-                          min="1"
-                          step="0.1"
                         />
                       </div>
                     </div>
@@ -345,6 +333,4 @@ export function AddCompanyDialog({ isOpen, onClose, onSuccess }) {
   );
 }
 
-
-
-export default AddCompanyDialog;;
+export default AddCompanyDialog;

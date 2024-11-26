@@ -116,7 +116,8 @@ export default function ActiveBets() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-400 focus:border-emerald-500 focus:ring-emerald-500"
-          />
+         
+         />
         </div>
       </motion.div>
 
@@ -171,7 +172,7 @@ export default function ActiveBets() {
                     <div className="space-y-2">
                       {bet.users.slice(0, 3).map((user) => (
                         <div key={user.id} className="flex justify-between items-center bg-gray-700 rounded-lg p-2">
-                          <span className="text-xs text-gray-200 font-medium">{user.name}</span>
+                          <span className="text-xs text-gray-200 font-medium">{user.name}a</span>
                           <div className="flex gap-1">
                             <Badge variant="outline" className="border-blue-500 text-blue-400 px-1 py-0.5 text-[10px]">
                               For: {user.forStake}x

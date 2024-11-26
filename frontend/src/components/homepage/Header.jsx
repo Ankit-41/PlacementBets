@@ -17,7 +17,8 @@ import {
   History,
   Trophy,
   Target,
-  Shield
+  Shield,
+  GraduationCap
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
@@ -32,17 +33,21 @@ export default function Header() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const tabs = [
+    { name: 'See Shortlists', path: '/individualSearch', icon: <Target className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
     { name: 'Active Bets', path: '/activebets', icon: <Flame className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
     { name: 'Expired Bets', path: '/expiredbets', icon: <History className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
     { name: 'Leaderboard', path: '/leaderboard', icon: <Trophy className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
-    { name: 'My Bets', path: '/mybets', icon: <Target className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    // { name: 'My Bets', path: '/mybets', icon: <Target className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    { name: 'Placement Data', path: 'https://placement-portal-frontend-xi.vercel.app', icon: <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
     { name: 'Admin Panel', path: '/adminPanel', icon: <Shield className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> },
+    // 'Resources', path: 'https://placement-portal-frontend-xi.vercel.app/', external: true }
+  
   ]
 
   const offers = [
-    "🔥 Kickstart Your Betting Journey with Premium Odds!",
+    "🔥 Check SHORTLISTS, Placement Data from Navbar(☰)",
     "🎓 Placement Season Surprise: Bet Big, Win Bigger!",
-    "🔓 Unlock Elite Betting Opportunities as a New Player!"
+    "🔓 Write to us at noreply.jobjinx@gmail.com"
   ]
 
   useEffect(() => {
@@ -122,12 +127,12 @@ export default function Header() {
                     <p className="text-xs text-gray-400">{user?.email}</p>
                   </div>
                   {[
-                    { icon: User, label: 'Profile', path: '/' },
-                    { icon: Settings, label: 'Settings', path: '/' },
+                    { icon: User, label: 'My bets', path: '/mybets' },
+                    // { icon: Settings, label: 'Settings', path: '/' },
                     { icon: Book, label: 'Rules', path: '/' },
-                    { icon: Share2, label: 'Refer and Earn', path: '/' },
-                    { icon: BookOpen, label: 'Resources', path: 'https://placement-portal-frontend-xi.vercel.app/', external: true },
-                    { icon: MessageSquare, label: 'Chat Bot', path: '/' },
+                    // { icon: Share2, label: 'Refer and Earn', path: '/' },
+                    // { icon: BookOpen, label: 'Resources', path: 'https://placement-portal-frontend-xi.vercel.app/', external: true },
+                    // { icon: MessageSquare, label: 'Chat Bot', path: '/' },
                   ].map((item) => (
                     <DropdownMenuItem key={item.label} className="flex items-center p-2 hover:bg-gray-700 transition-colors text-xs sm:text-sm">
                       <item.icon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-emerald-400" />

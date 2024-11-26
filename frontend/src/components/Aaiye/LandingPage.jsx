@@ -13,8 +13,8 @@ import { ChevronRight, Loader2, Users, BarChart, TrendingUp, AlertTriangle, Info
 import { Mail, Timer, Trophy } from 'lucide-react';
 import { useAuth } from './../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import ForgotPasswordForm from './ForgotPasswordForm';  // Adjust the import path as needed
-
+import ForgotPasswordForm from './ForgotPasswordForm';  
+import InfoModal from './InfoModal'; 
 // Import react-toastify components and styles
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -38,6 +38,7 @@ export default function LandingPage() {
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [isSigningUp, setIsSigningUp] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false); // Modal visibility state
 
     const { login, signup, error } = useAuth();
 
@@ -167,7 +168,8 @@ export default function LandingPage() {
 
         try {
             await login(email, password);
-            navigate('/');
+            setShowInfoModal(true); // Show modal after successful login
+            // navigate('/');
         } catch (error) {
             console.error('Login error:', error);
             setFormError(error.response?.data?.message || 'Login failed');
@@ -209,7 +211,8 @@ export default function LandingPage() {
                 enrollmentNumber,
                 password
             });
-            navigate('/');
+            setShowInfoModal(true); // Show modal after successful signup
+            // navigate('/');
             toast.success('Signup successful! Welcome to JobJinx.');
         } catch (error) {
             console.error('Signup error:', error);
@@ -221,6 +224,7 @@ export default function LandingPage() {
     };
 
     return (
+        <>
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4 relative overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500 rounded-full blur-[128px] opacity-20"></div>
@@ -505,7 +509,7 @@ export default function LandingPage() {
                                     <span className="absolute -top-2 -left-2 bg-emerald-400 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold text-gray-900">1</span>
                                 </div>
                                 <div>
-                                    <p className="text-gray-400">Sign up with your IITR email to receive 1000 welcome tokens - your gateway to predicting placement outcomes for your peers.</p>
+                                    <p className="text-gray-400">Sign up with your IITR email to receive 100000 welcome tokens - your gateway to predicting placement outcomes for your peers.</p>
                                 </div>
                             </div>
 
@@ -585,5 +589,14 @@ export default function LandingPage() {
                 </div>
             )}
         </div>
-    )
+        <InfoModal
+                isVisible={showInfoModal}
+                onClose={() => {
+                    setShowInfoModal(false);
+                    navigate('/'); // Redirect to home page on modal close
+                }}
+            />
+        </>
+        
+    );
 }

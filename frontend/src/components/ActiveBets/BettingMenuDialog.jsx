@@ -206,7 +206,7 @@ export function BettingMenuDialog({ bet, onClose }) {
                       className="cursor-pointer hover:text-emerald-400 transition-colors duration-200"
                       onClick={() => handleProfileClick(user.enrollmentNumber)}
                     >
-                      {user.name}
+                      {user.name}a
                     </span>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
@@ -214,7 +214,7 @@ export function BettingMenuDialog({ bet, onClose }) {
                       className="cursor-pointer hover:text-emerald-400 transition-colors duration-200 flex items-center"
                       onClick={() => handleProfileClick(user.enrollmentNumber)}
                     >
-                      {user.enrollmentNumber}
+                      {user.enrollmentNumber}a
                       <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
                     </span>
                   </TableCell>

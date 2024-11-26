@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
   },
   tokens: {
     type: Number,
-    default: 1000 // Starting tokens for new users
+    default: 100000 // Starting tokens for new users
   },
  wonBets:{
   type:Number,
