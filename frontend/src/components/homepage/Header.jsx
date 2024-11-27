@@ -92,7 +92,9 @@ export default function Header() {
           {/* Top Header Section */}
           <div className="flex items-center justify-between py-2 sm:py-3">
             <Link to="/" className="flex items-center space-x-2">
+              <img src="./white_dice.webp" alt="Logo" className="w-10 h-10 rounded-full object-cover" />
               <span className="text-xl sm:text-2xl font-bold text-white">JobJinx</span>
+              
             </Link>
             <motion.div
               className="flex items-center space-x-1 sm:space-x-2 bg-gray-800 p-1 sm:p-2 rounded-full"
@@ -129,7 +131,7 @@ export default function Header() {
                   {[
                     { icon: User, label: 'My bets', path: '/mybets' },
                     // { icon: Settings, label: 'Settings', path: '/' },
-                    { icon: Book, label: 'Rules', path: '/' },
+                    { icon: Book, label: 'User Guide', path: '/guide' },
                     // { icon: Share2, label: 'Refer and Earn', path: '/' },
                     // { icon: BookOpen, label: 'Resources', path: 'https://placement-portal-frontend-xi.vercel.app/', external: true },
                     // { icon: MessageSquare, label: 'Chat Bot', path: '/' },

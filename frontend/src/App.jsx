@@ -1,5 +1,6 @@
 // App.jsx
 import React from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 // import Layout from './components/Finder/Layout';
@@ -16,7 +17,8 @@ import FooterDescription from './components/homepage/FooterDescription';
 import AdminPanel from './components/adminPanel/adminPanel';
 import { useAuth } from './contexts/AuthContext';
 import Unauthorized from './components/adminPanel/unauthorized';
-
+import InfoModal from './components/Aaiye/InfoModal';
+import FarewellPage from './components/Farewell/farewell';
 const AdminProtectedLayout = ({ children }) => {
   const { user } = useAuth();
 
@@ -57,21 +59,31 @@ const ProtectedLayout = ({ children }) => {
   );
 };
 
+
+
 function App() {
+  const [showInfoModal, setShowInfoModal] = useState(true); // Modal visibility state
   return (
     <AuthProvider>
       <Router>
         {/* <Layout> */}
           <Routes>
-            <Route path="/home" element={<LandingPage />} />
+            <Route path="/home" element={<FarewellPage />} />
+
+            <Route path="/" element={
+              <ProtectedLayout>
+                <FarewellPage />
+              </ProtectedLayout>
+            } />
+            {/* <Route path="/home" element={<LandingPage />} />
 
             <Route path="/" element={
               <ProtectedLayout>
                 <HomePage />
               </ProtectedLayout>
-            } />
+            } /> */}
 
-            <Route path="/leaderboard" element={
+            {/* <Route path="/leaderboard" element={
               <ProtectedLayout>
                 <Leaderboard />
               </ProtectedLayout>
@@ -104,12 +116,23 @@ function App() {
                 <AdminPanel />
               </AdminProtectedLayout>
             } />
+            <Route path="/guide" element={
+              <AdminProtectedLayout>
+                 <InfoModal
+                isVisible={showInfoModal}
+                onClose={() => {
+                    setShowInfoModal(false);
+                    navigate('/'); // Redirect to home page on modal close
+                }}
+            />
+              </AdminProtectedLayout>
+            } />
 
             <Route path="/mybets" element={
               <ProtectedLayout>
                 <MyBets />
               </ProtectedLayout>
-            } />
+            } /> */}
 
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/home" replace />} />

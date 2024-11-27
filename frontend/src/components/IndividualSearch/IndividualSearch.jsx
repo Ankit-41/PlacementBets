@@ -312,7 +312,7 @@ export default function IndividualSearch() {
                 <h1 className="text-2xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
                     See Shortlists
                 </h1>
-                <p className="text-gray-400 text-sm sm:text-base">Search for individuals and view their placement history</p>
+                <p className="text-gray-400 text-sm sm:text-base">Search for individuals and view their shortlists, filter by branch</p>
             </motion.div>
 
             <motion.div

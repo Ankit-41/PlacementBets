@@ -11,13 +11,20 @@ const leaderboardRoutes = require('./routes/LeaderboardRoutes');
 const userProfileRoutes= require('./routes/userProfileRoutes.js')
 const adminPanelRoutes = require('./routes/adminPanelRoutes');
 const individualRoutes = require('./routes/individualRoutes.js');
+const {
+  globalLimiter,
+  authLimiter,
+  apiLimiter,
+  adminLimiter
+} = require('./middleware/rateLimiter.js');
 
 const app = express();
 
 // Enable CORS with credentials
 app.use(cors({
-  origin: 'http://localhost:5172', // Your frontend URL
+  // origin: 'http://localhost:5172', // Your frontend URL
   // origin: 'https://jobjinx.vercel.app', // Your frontend URL
+  origin:  'https://placestats.vercel.app', // Your frontend URL
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -27,19 +34,20 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Apply global rate limiter
+app.use(globalLimiter);
 // Connect to MongoDB
 connectDB();
 
 // Routes
-app.use('/api/auth', authRoutes);
-// const companyRoutes = require('./routes/companyRoutes');
-app.use('/api/companies', companyRoutes);
-app.use('/api/bets', betRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api/users',userProfileRoutes);
-// Add this line with your other route middleware
-app.use('/api/admin/companies', adminPanelRoutes);
-app.use('/api/individuals', individualRoutes);
+// Routes with specific rate limiters
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/companies', apiLimiter, companyRoutes);
+app.use('/api/bets', apiLimiter, betRoutes);
+app.use('/api/leaderboard', apiLimiter, leaderboardRoutes);
+app.use('/api/users', apiLimiter, userProfileRoutes);
+app.use('/api/admin/companies', adminLimiter, adminPanelRoutes);
+app.use('/api/individuals', apiLimiter, individualRoutes);
 // Basic error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, TrendingUp, Target, Users, History, Search } from 'lucide-react';
 
-function InfoModal({ isVisible, onClose }) {
+export default function InfoModal({ isVisible, onClose }) {
   if (!isVisible) return null;
 
   const sectionVariants = {
@@ -129,7 +129,7 @@ function InfoModal({ isVisible, onClose }) {
                 <Target className="mr-2 text-emerald-400 h-5 w-5" /> How It Works
               </h3>
               <ol className="list-decimal list-inside space-y-1 pl-2">
-                <li><span className="font-medium">Connect & Start:</span> Sign up with your IITR email and get 1000 tokens instantly</li>
+                <li><span className="font-medium">Connect & Start:</span> Sign up with your IITR email and get 100000 tokens instantly</li>
                 <li><span className="font-medium">Choose & Bet:</span> Browse active drives and place strategic bets with dynamic stake multipliers</li>
                 <li><span className="font-medium">Track & Win:</span> Monitor results live, collect winnings, and climb the leaderboard</li>
               </ol>
@@ -172,4 +172,3 @@ function InfoModal({ isVisible, onClose }) {
   );
 }
 
-export default InfoModal;
