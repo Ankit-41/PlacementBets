@@ -51,24 +51,19 @@ Follow these steps to set it up:
    ```bash
    git clone https://github.com/Ankit-41/PlacementBets.git  
    cd PlacementBets  
-   ```  
+   ```   
 
-2. Switch to the feature branch:  
-   ```bash
-   git checkout feature/1.0  
-   ```  
-
-3. Install dependencies:  
+2. Install dependencies:  
    ```bash
    npm install  
    ```  
 
-4. Run the development server:  
+3. Run the development server:  
    ```bash
    npm run dev  
    ```  
 
-5. Open `http://localhost:3000` in your browser and check it out!  
+4. Open `http://localhost:5172` in your browser and check it out!  
 
 ---
 
