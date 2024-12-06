@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180">
+  <!-- Background shape -->
+  <defs>
+    <linearGradient id="oliveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#808000" />
+      <stop offset="100%" style="stop-color:#556B2F" />
+    </linearGradient>
+    
+    <!-- Shine effect -->
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0)" />
+      <stop offset="50%" style="stop-color:rgba(255,255,255,0.1)" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0)" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main text "Job" -->
+  <text x="60" y="120" font-family="Arial, sans-serif" font-weight="bold" font-size="100" fill="#4A5517">
+    Job
+  </text>
+  
+  <!-- Jinx text with olive gradient -->
+  <text x="235" y="120" font-family="Arial, sans-serif" font-weight="bold" font-size="100" fill="url(#oliveGradient)">
+    Jinx
+  </text>
+  
+  <!-- Decorative star burst -->
+  <g transform="translate(480, 50) scale(0.8)">
+    <path d="M0,-25 L7,-7 L25,0 L7,7 L0,25 L-7,7 L-25,0 L-7,-7 Z" fill="#A0B046">
+      <animateTransform 
+        attributeName="transform"
+        type="rotate"
+        from="0 0 0"
+        to="360 0 0"
+        dur="4s"
+        repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Underline swoosh -->
+  <path d="M60,135 Q300,170 520,135" stroke="url(#oliveGradient)" stroke-width="4" fill="none"/>
+  
+  <!-- Dots -->
+  <circle cx="275" y="60" r="5" fill="#808000"/>
+  <circle cx="295" y="60" r="5" fill="#808000"/>
+  <circle cx="315" y="60" r="5" fill="#808000"/>
+  
+  <!-- Subtle shine overlay -->
+  <rect x="60" y="70" width="460" height="60" fill="url(#shine)" opacity="0.5"/>
+</svg>

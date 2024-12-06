@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle with Gradient -->
+  <defs>
+    <radialGradient id="grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#1E90FF; stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#104E8B; stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="url(#grad)"/>
+
+  <!-- Graduation Cap -->
+  <polygon points="64,24 52,40 76,40" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2"/>
+  <line x1="64" y1="24" x2="64" y2="40" stroke="#FFFFFF" stroke-width="2"/>
+
+  <!-- Office Bag -->
+  <rect x="40" y="48" width="48" height="32" fill="#FFD700" stroke="#FFA500" stroke-width="2" rx="4" ry="4"/>
+  <rect x="44" y="52" width="40" height="24" fill="#FFA500"/>
+  
+  <!-- Bag Handles -->
+  <path d="M40,48 L48,40" stroke="#FFA500" stroke-width="2"/>
+  <path d="M88,48 L80,40" stroke="#FFA500" stroke-width="2"/>
+
+  <!-- Dollar Sign -->
+  <text x="64" y="88" font-family="Arial, sans-serif" font-size="32" fill="#008000" text-anchor="middle" dominant-baseline="middle" font-weight="bold">$</text>
+
+  <!-- Sparkles for Visual Appeal -->
+  <circle cx="90" cy="30" r="3" fill="#FFFFFF"/>
+  <circle cx="38" cy="60" r="2" fill="#FFFFFF"/>
+  <circle cx="56" cy="36" r="2" fill="#FFFFFF"/>
+  <circle cx="104" cy="48" r="2" fill="#FFFFFF"/>
+  <circle cx="24" cy="50" r="2" fill="#FFFFFF"/>
+</svg>
